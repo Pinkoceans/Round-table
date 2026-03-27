@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useForumStore, CHARACTER_CATEGORIES, CATEGORY_NAMES } from '../store';
 import { providers, models } from './SettingsPanel';
+import { t } from '../i18n';
 
 function TopicCharacterPanel() {
   const { 
@@ -15,6 +16,7 @@ function TopicCharacterPanel() {
     setCharacterAPIConfig,
     apiConfigs,
     addAPIConfig,
+    language,
   } = useForumStore();
   
   const [newTitle, setNewTitle] = useState('');
@@ -140,51 +142,51 @@ function TopicCharacterPanel() {
   // 话题管理界面
   if (!showCharacterSelect) {
     return (
-      <div className="bg-white/90 backdrop-blur-md rounded-xl border-2 border-gray-200 shadow-lg h-full flex flex-col">
-        <h2 className="text-lg font-bold text-gray-800 mb-3 px-4 pt-4">话题管理</h2>
+      <div className="h-full flex flex-col bg-gradient-to-b from-blue-50/50 to-white">
+        <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-4 pt-4">话题</h2>
         
         {/* 创建话题表单 */}
-        <div className="mb-4 p-3 bg-gray-100 rounded-lg border border-gray-200 mx-4">
+        <div className="mb-3 px-4">
           <div className="space-y-2">
             <input
               type="text"
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              placeholder="新话题标题"
-              className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-800 text-sm placeholder-gray-400 focus:outline-none focus:border-gray-500"
+              placeholder={t('topic.placeholder.title', language)}
+              className="w-full bg-white/50 border-0 rounded-lg px-3 py-2 text-gray-800 text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300"
             />
             <textarea
               value={newDescription}
               onChange={(e) => setNewDescription(e.target.value)}
-              placeholder="话题描述（可选）"
+              placeholder={t('topic.placeholder.description', language)}
               rows={2}
-              className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-800 text-sm placeholder-gray-400 focus:outline-none focus:border-gray-500 resize-none"
+              className="w-full bg-white/50 border-0 rounded-lg px-3 py-2 text-gray-800 text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300 resize-none"
             />
             <button
               onClick={handleCreateTopic}
               disabled={!newTitle.trim()}
-              className="w-full px-3 py-2 bg-gray-800 hover:bg-gray-700 disabled:bg-gray-400 text-white text-sm rounded transition-all disabled:cursor-not-allowed font-medium"
+              className="w-full px-3 py-2 bg-gray-800 hover:bg-gray-700 disabled:bg-gray-400 text-white text-sm rounded-lg transition-all disabled:cursor-not-allowed font-medium"
             >
-              创建话题
+              {t('topic.create', language)}
             </button>
           </div>
         </div>
         
         {/* 话题列表 */}
-        <div className="flex-1 overflow-y-auto px-4 space-y-2">
+        <div className="flex-1 overflow-y-auto px-4 space-y-2 [&::-webkit-scrollbar]:hidden">
           {topics.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-500 mb-2">暂无话题</p>
-              <p className="text-gray-400 text-sm">创建一个话题开始讨论</p>
+              <p className="text-gray-500 mb-2">{t('topic.empty', language)}</p>
+              <p className="text-gray-400 text-sm">{t('topic.createHint', language)}</p>
             </div>
           ) : (
             topics.map((topic) => (
               <div
                 key={topic.id}
-                className={`p-4 rounded-lg border-2 transition-all cursor-pointer ${
+                className={`p-4 rounded-lg transition-all cursor-pointer ${
                   currentTopicId === topic.id
-                    ? 'bg-gray-800 border-gray-700 text-white'
-                    : 'bg-white border-gray-200 hover:border-gray-400 text-gray-800'
+                    ? 'bg-gray-800 text-white'
+                    : 'bg-white/50 hover:bg-white text-gray-800'
                 }`}
                 onClick={() => handleTopicClick(topic)}
               >
@@ -201,7 +203,7 @@ function TopicCharacterPanel() {
                     <p className={`text-xs mt-2 ${
                       currentTopicId === topic.id ? 'text-gray-400' : 'text-gray-400'
                     }`}>
-                      {topic.messages.length} 条消息
+                      {topic.messages.length} {t('topic.messages', language)}
                     </p>
                   </div>
                   <button
@@ -215,7 +217,7 @@ function TopicCharacterPanel() {
                         : 'text-gray-400 hover:text-red-500'
                     }`}
                   >
-                    删除
+                    {t('action.delete', language)}
                   </button>
                 </div>
               </div>
@@ -229,25 +231,24 @@ function TopicCharacterPanel() {
   // 角色选择界面
   if (showConfigPanel && configuringCharacter) {
     return (
-      <div className="bg-white/90 backdrop-blur-md rounded-xl border-2 border-gray-200 shadow-lg h-full flex flex-col">
-        <div className="px-4 pt-4 pb-3 border-b border-gray-200">
+      <div className="h-full flex flex-col bg-gradient-to-b from-blue-50/50 to-white">
+        <div className="px-4 pt-4 pb-3">
           <div className="flex items-center">
             <button
               onClick={handleBackToCharacterSelect}
-              className="mr-3 p-1 hover:bg-gray-100 rounded transition-all"
+              className="mr-3 p-1 hover:bg-white/50 rounded transition-all"
             >
               <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <h2 className="text-lg font-bold text-gray-800">AI 配置</h2>
+            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('character.aiConfig', language)}</h2>
           </div>
-          <p className="text-xs text-gray-500 mt-1">为 {configuringCharacter.name} 配置 AI 模型</p>
         </div>
         
-        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4 [&::-webkit-scrollbar]:hidden">
           <div>
-            <label className="block text-xs text-gray-500 mb-1">服务商</label>
+            <label className="block text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2">{t('settings.provider', language)}</label>
             <select
               value={configuringCharacter.apiConfig?.provider || 'openai'}
               onChange={(e) => {
@@ -268,7 +269,7 @@ function TopicCharacterPanel() {
           </div>
           
           <div>
-            <label className="block text-xs text-gray-500 mb-1">API Key</label>
+            <label className="block text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2">{t('settings.apiKey', language)}</label>
             <input
               type="password"
               value={configuringCharacter.apiConfig?.apiKey || ''}
@@ -281,13 +282,13 @@ function TopicCharacterPanel() {
                   }
                 });
               }}
-              placeholder="输入 API Key"
+              placeholder={t('settings.inputApiKey', language)}
               className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-800"
             />
           </div>
           
           <div>
-            <label className="block text-xs text-gray-500 mb-1">模型</label>
+            <label className="block text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2">{t('settings.model', language)}</label>
             <select
               value={configuringCharacter.apiConfig?.model || 'gpt-5.4-thinking'}
               onChange={(e) => {
@@ -309,7 +310,7 @@ function TopicCharacterPanel() {
           
           {apiConfigs.length > 0 && (
             <div className="pt-2">
-              <p className="text-xs text-gray-500 mb-2">或使用已有配置：</p>
+              <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2">{t('settings.orUseExisting', language) || 'OR USE EXISTING'}</p>
               <div className="space-y-1">
                 {apiConfigs.map((config) => (
                   <button
@@ -330,7 +331,7 @@ function TopicCharacterPanel() {
           )}
         </div>
         
-        <div className="px-4 pb-4 pt-3 border-t border-gray-200">
+        <div className="px-4 pb-4 pt-3">
           <button
             onClick={() => {
               if (configuringCharacter.apiConfig?.apiKey) {
@@ -338,9 +339,9 @@ function TopicCharacterPanel() {
               }
             }}
             disabled={!configuringCharacter.apiConfig?.apiKey}
-            className="w-full px-4 py-2.5 bg-gray-800 hover:bg-gray-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-all shadow-md"
+            className="w-full px-4 py-2.5 bg-gray-800 hover:bg-gray-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-all"
           >
-            保存配置
+            {t('settings.saveConfig', language)}
           </button>
         </div>
       </div>
@@ -349,83 +350,83 @@ function TopicCharacterPanel() {
 
   // 角色选择主界面
   return (
-    <div className="bg-white/90 backdrop-blur-md rounded-xl border-2 border-gray-200 shadow-lg h-full flex flex-col">
-      <div className="px-3 py-2 border-b border-gray-200 flex-shrink-0">
+    <div className="h-full flex flex-col bg-gradient-to-b from-blue-50/50 to-white">
+      <div className="px-4 pt-4 pb-3 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
-            <h2 className="text-base font-bold text-gray-800 truncate">角色选择</h2>
+            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider truncate">{t('character.select', language)}</h2>
             {selectedTopic && (
-              <p className="text-xs text-gray-500 truncate mt-0.5">话题：{selectedTopic.title}</p>
+              <p className="text-[10px] text-gray-400 truncate mt-1">{t('topic.title', language)}: {selectedTopic.title}</p>
             )}
           </div>
           <button
             onClick={handleBackToTopics}
-            className="ml-2 px-2 py-1 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs rounded transition-all flex-shrink-0"
+            className="ml-2 px-3 py-1.5 bg-white/50 hover:bg-white text-gray-700 text-xs rounded-lg transition-all flex-shrink-0"
           >
-            返回
+            {t('action.back', language)}
           </button>
         </div>
       </div>
       
-      <div className="px-3 py-2 border-b border-gray-200 flex-shrink-0">
-        <div className="grid grid-cols-4 gap-1.5 mb-2">
+      <div className="px-4 py-3 flex-shrink-0">
+        <div className="grid grid-cols-4 gap-2 mb-3">
           <button
             onClick={() => handleCategoryChange('selected')}
-            className={`px-1.5 py-1.5 rounded-md text-xs font-medium transition-all ${
+            className={`px-2 py-2 rounded-lg text-xs font-medium transition-all ${
               selectedCategory === 'selected'
-                ? 'bg-gray-800 text-white shadow-sm'
-                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                ? 'bg-gray-800 text-white'
+                : 'bg-white/50 hover:bg-white text-gray-700'
             }`}
-            title={`已选角色 (${activeCharacters.length})`}
+            title={`${t('character.category.selected', language)} (${activeCharacters.length})`}
           >
-            已选
+            {t('character.category.selected', language)}
             <span className="text-[10px] opacity-70 ml-0.5">({activeCharacters.length})</span>
           </button>
           {Object.entries(CATEGORY_NAMES).map(([key, name]) => (
             <button
               key={key}
               onClick={() => handleCategoryChange(key)}
-              className={`px-1.5 py-1.5 rounded-md text-xs font-medium transition-all ${
+              className={`px-2 py-2 rounded-lg text-xs font-medium transition-all ${
                 selectedCategory === key
-                  ? 'bg-gray-800 text-white shadow-sm'
-                  : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  ? 'bg-gray-800 text-white'
+                  : 'bg-white/50 hover:bg-white text-gray-700'
               }`}
               title={name}
             >
-              {name}
+              {t(`category.${key}`, language) || name}
             </button>
           ))}
         </div>
         
-        <div className="flex items-center justify-between space-x-1">
+        <div className="flex items-center justify-between space-x-2">
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="bg-white border border-gray-300 rounded px-1.5 py-1 text-xs text-gray-700 flex-1"
+            className="bg-white/50 border-0 rounded-lg px-2 py-1.5 text-xs text-gray-700 flex-1"
           >
-            <option value="popularity">知名度</option>
-            <option value="name">字母</option>
+            <option value="popularity">{t('character.sort.popularity', language)}</option>
+            <option value="name">{t('character.sort.name', language)}</option>
           </select>
           <button
             onClick={handleSelectAll}
-            className="px-1.5 py-1 bg-gray-800 hover:bg-gray-700 text-white text-xs rounded transition-all flex-1 ml-1"
+            className="px-2 py-1.5 bg-gray-800 hover:bg-gray-700 text-white text-xs rounded-lg transition-all flex-1"
           >
-            全选
+            {t('character.selectAll', language)}
           </button>
           <button
             onClick={handleDeselectAll}
-            className="px-1.5 py-1 bg-gray-500 hover:bg-gray-600 text-white text-xs rounded transition-all flex-1 ml-1"
+            className="px-2 py-1.5 bg-gray-500 hover:bg-gray-600 text-white text-xs rounded-lg transition-all flex-1"
           >
-            清空
+            {t('character.clear', language)}
           </button>
         </div>
       </div>
       
-      <div className="flex-1 overflow-y-auto px-3 py-2">
+      <div className="flex-1 overflow-y-auto px-4 py-2 [&::-webkit-scrollbar]:hidden">
         {sortedCharacters.length === 0 ? (
-          <p className="text-gray-400 text-xs text-center py-4">该分类暂无角色</p>
+          <p className="text-gray-400 text-xs text-center py-4">{t('character.empty', language)}</p>
         ) : (
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             {sortedCharacters.map((character) => {
               const isActive = activeCharacters.includes(character.id);
               const hasConfig = !!character.apiConfig;
@@ -433,13 +434,13 @@ function TopicCharacterPanel() {
               return (
                 <div
                   key={character.id}
-                  className={`flex items-center p-2 rounded border transition-all ${
+                  className={`flex items-center p-3 rounded-lg transition-all ${
                     isActive
-                      ? 'bg-gray-800 border-gray-700 text-white'
-                      : 'bg-white border-gray-200 hover:border-gray-400 text-gray-800'
+                      ? 'bg-gray-800 text-white'
+                      : 'bg-white/50 hover:bg-white text-gray-800'
                   }`}
                 >
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0 ${
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0 ${
                     isActive 
                       ? 'bg-gradient-to-br from-gray-500 to-gray-400' 
                       : 'bg-gradient-to-br from-gray-700 to-gray-600'
@@ -447,7 +448,7 @@ function TopicCharacterPanel() {
                     {character.name.charAt(0)}
                   </div>
                   
-                  <div className="flex-1 min-w-0 ml-2">
+                  <div className="flex-1 min-w-0 ml-3">
                     <div className="flex items-center space-x-1">
                       <h3 className="font-medium text-xs truncate flex items-center">
                         {character.name}
@@ -458,19 +459,19 @@ function TopicCharacterPanel() {
                         )}
                       </h3>
                     </div>
-                    <p className={`text-xs truncate ${
+                    <p className={`text-xs truncate mt-0.5 ${
                       isActive ? 'text-gray-300' : 'text-gray-500'
                     }`}>{character.identity}</p>
                   </div>
                   
                   <button
                     onClick={() => setShowBio(character)}
-                    className={`p-1 rounded transition-all flex-shrink-0 ${
+                    className={`p-1.5 rounded-lg transition-all flex-shrink-0 ${
                       isActive
                         ? 'bg-gray-600 hover:bg-gray-500 text-white'
-                        : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+                        : 'bg-white/50 hover:bg-white text-gray-600'
                     }`}
-                    title="查看简介"
+                    title={t('character.bio', language)}
                   >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -479,13 +480,13 @@ function TopicCharacterPanel() {
                   
                   <button
                     onClick={() => handleToggleCharacter(character.id)}
-                    className={`ml-1 px-2 py-1 text-xs rounded transition-all flex-shrink-0 ${
+                    className={`ml-2 px-3 py-1.5 text-xs rounded-lg transition-all flex-shrink-0 ${
                       isActive
                         ? 'bg-red-600 hover:bg-red-500 text-white'
                         : 'bg-gray-800 hover:bg-gray-700 text-white'
                     }`}
                   >
-                    {isActive ? '移除' : '添加'}
+                    {isActive ? t('character.remove', language) : t('character.add', language)}
                   </button>
                   
                   {isActive && (
@@ -494,9 +495,9 @@ function TopicCharacterPanel() {
                         e.stopPropagation();
                         handleOpenConfig(character);
                       }}
-                      className="ml-1 px-2 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded transition-all flex-shrink-0"
+                      className="ml-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded-lg transition-all flex-shrink-0"
                     >
-                      配置
+                      {t('character.configure', language)}
                     </button>
                   )}
                 </div>
@@ -506,13 +507,13 @@ function TopicCharacterPanel() {
         )}
       </div>
       
-      <div className="px-3 pb-2 pt-1 border-t border-gray-200 flex-shrink-0">
+      <div className="px-4 pb-3 pt-2 flex-shrink-0">
         <div className="flex items-center justify-between text-xs">
           <span className="text-gray-500">
-            已选：<span className="text-gray-800 font-medium">{activeCharacters.length}</span>
+            {t('character.category.selected', language)}: <span className="text-gray-800 font-medium">{activeCharacters.length}</span>
           </span>
           <span className="text-gray-400">
-            共 {sortedCharacters.length}
+            {t('character.total', language)} {sortedCharacters.length}
           </span>
         </div>
       </div>
@@ -543,23 +544,23 @@ function TopicCharacterPanel() {
             
             <div className="space-y-4">
               <div>
-                <h4 className="text-sm font-semibold text-gray-700 mb-1">性格特点</h4>
+                <h4 className="text-sm font-semibold text-gray-700 mb-1">{t('bio.personality', language)}</h4>
                 <p className="text-sm text-gray-600">{showBio.personality}</p>
               </div>
               
               <div>
-                <h4 className="text-sm font-semibold text-gray-700 mb-1">说话风格</h4>
+                <h4 className="text-sm font-semibold text-gray-700 mb-1">{t('bio.speakingStyle', language)}</h4>
                 <p className="text-sm text-gray-600">{showBio.speakingStyle}</p>
               </div>
               
               <div>
-                <h4 className="text-sm font-semibold text-gray-700 mb-1">背景介绍</h4>
+                <h4 className="text-sm font-semibold text-gray-700 mb-1">{t('bio.background', language)}</h4>
                 <p className="text-sm text-gray-600">{showBio.background}</p>
               </div>
               
               {showBio.status === 'deceased' && (
                 <div className="text-xs text-gray-400">
-                  历史人物
+                  {t('bio.historical', language)}
                 </div>
               )}
             </div>
@@ -569,7 +570,7 @@ function TopicCharacterPanel() {
                 onClick={() => setShowBio(null)}
                 className="w-full px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white text-sm rounded-lg transition-all"
               >
-                关闭
+                {t('action.close', language)}
               </button>
             </div>
           </div>

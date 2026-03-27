@@ -474,6 +474,114 @@ async function callDoubao(character, messages, config) {
   return data.choices[0].message.content;
 }
 
+// Hugging Face Inference API 调用（免费）
+async function callHuggingFace(character, messages, config, conversationHistory = [], settings = {}) {
+  const systemPrompt = generateSystemPrompt(character, conversationHistory, settings);
+  
+  const formattedMessages = [
+    { role: 'system', content: systemPrompt },
+    ...messages.map((msg) => ({
+      role: msg.role === 'user' ? 'user' : 'assistant',
+      content: msg.content,
+    })),
+  ];
+
+  // 使用 Hugging Face Inference API
+  const model = config.model || 'mistralai/Mistral-7B-Instruct-v0.2';
+  const response = await fetch(`https://api-inference.huggingface.co/models/${model}/v1/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${config.apiKey}`,
+    },
+    body: JSON.stringify({
+      messages: formattedMessages,
+      temperature: config.temperature || 0.7,
+      max_tokens: 2000,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: response.statusText }));
+    throw new Error(`Hugging Face API 错误：${error.error || error.message || response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || '';
+}
+
+// Ollama 本地 API 调用（完全免费，本地运行）
+async function callOllama(character, messages, config, conversationHistory = [], settings = {}) {
+  const systemPrompt = generateSystemPrompt(character, conversationHistory, settings);
+  
+  const formattedMessages = [
+    { role: 'system', content: systemPrompt },
+    ...messages.map((msg) => ({
+      role: msg.role === 'user' ? 'user' : 'assistant',
+      content: msg.content,
+    })),
+  ];
+
+  // Ollama 默认运行在本地 11434 端口
+  const baseUrl = config.baseUrl || 'http://localhost:11434';
+  const response = await fetch(`${baseUrl}/v1/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: config.model || 'llama2',
+      messages: formattedMessages,
+      temperature: config.temperature || 0.7,
+      max_tokens: 2000,
+      stream: false,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text().catch(() => response.statusText);
+    throw new Error(`Ollama 错误：${error}。请确保 Ollama 已安装并运行：ollama serve`);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || '';
+}
+
+// Groq API 调用（有免费额度）
+async function callGroq(character, messages, config, conversationHistory = [], settings = {}) {
+  const systemPrompt = generateSystemPrompt(character, conversationHistory, settings);
+  
+  const formattedMessages = [
+    { role: 'system', content: systemPrompt },
+    ...messages.map((msg) => ({
+      role: msg.role === 'user' ? 'user' : 'assistant',
+      content: msg.content,
+    })),
+  ];
+
+  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${config.apiKey}`,
+    },
+    body: JSON.stringify({
+      model: config.model || 'llama3-70b-8192',
+      messages: formattedMessages,
+      temperature: config.temperature || 0.7,
+      max_tokens: 2000,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: response.statusText }));
+    throw new Error(`Groq API 错误：${error.error?.message || response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.choices[0].message.content;
+}
+
 // 主调用函数：根据配置选择对应的 API 提供商（支持多角色互动）
 export async function callAI(character, messages, config, conversationHistory = [], settings = {}) {
   if (!config || !config.apiKey) {
@@ -504,6 +612,12 @@ export async function callAI(character, messages, config, conversationHistory = 
         return await callMiniMax(character, messages, config, conversationHistory, settings);
       case 'doubao':
         return await callDoubao(character, messages, config, conversationHistory, settings);
+      case 'huggingface':
+        return await callHuggingFace(character, messages, config, conversationHistory, settings);
+      case 'ollama':
+        return await callOllama(character, messages, config, conversationHistory, settings);
+      case 'groq':
+        return await callGroq(character, messages, config, conversationHistory, settings);
       case 'openai':
       default:
         return await callOpenAI(character, messages, config, conversationHistory, settings);

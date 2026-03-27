@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
+import { useForumStore } from '../store';
+import { t } from '../i18n';
 
 function AboutModal({ onClose }) {
+  const { language } = useForumStore();
+  
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl p-6 max-w-2xl w-full border border-gray-200 max-h-[80vh] overflow-y-auto">
         <div className="flex items-start justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-1">圆桌</h2>
-            <p className="text-sm text-gray-500">与伟人对话的思想平台</p>
+            <h2 className="text-2xl font-bold text-gray-800 mb-1">{t('nav.roundtable', language)}</h2>
+            <p className="text-sm text-gray-500">{t('about.description', language)}</p>
           </div>
           <button
             onClick={onClose}
@@ -26,12 +30,10 @@ function AboutModal({ onClose }) {
               <svg className="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              项目介绍
+              {t('about.title', language)}
             </h3>
             <p className="text-sm text-gray-600 leading-relaxed">
-              圆桌是一个创新的多角色 AI 对话模拟平台，让不同时代、不同领域的伟人通过 AI 进行思想碰撞。
-              你可以在这里创建话题，选择历史或现代的伟大人物，让他们使用最新的 AI 模型进行对话讨论，
-              体验跨越时空的思想交流。
+              {t('about.description', language)}
             </p>
           </section>
 
@@ -41,24 +43,24 @@ function AboutModal({ onClose }) {
               <svg className="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
               </svg>
-              核心功能
+              {t('about.coreFeatures', language)}
             </h3>
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-gray-50 rounded-lg p-3">
-                <h4 className="font-medium text-gray-800 text-sm mb-1">🎭 74 位智者</h4>
-                <p className="text-xs text-gray-600">涵盖 6 大领域：商业、哲学、科学、文学、政治、科技</p>
+                <h4 className="font-medium text-gray-800 text-sm mb-1">🎭 {t('about.wiseMen', language, { count: 74 })}</h4>
+                <p className="text-xs text-gray-600">{t('about.wiseMenDesc', language, { categories: 6 })}</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-3">
-                <h4 className="font-medium text-gray-800 text-sm mb-1">🤖 12 家 AI</h4>
-                <p className="text-xs text-gray-600">支持 48 个最新 AI 模型，包括 GPT-5.4、Claude 等</p>
+                <h4 className="font-medium text-gray-800 text-sm mb-1">🤖 {t('about.aiProviders', language, { count: 12 })}</h4>
+                <p className="text-xs text-gray-600">{t('about.aiProvidersDesc', language, { models: 48 })}</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-3">
-                <h4 className="font-medium text-gray-800 text-sm mb-1">💬 多角色对话</h4>
-                <p className="text-xs text-gray-600">多个角色同时参与讨论，各有独特风格</p>
+                <h4 className="font-medium text-gray-800 text-sm mb-1">💬 {t('about.multiCharacter', language)}</h4>
+                <p className="text-xs text-gray-600">{t('about.multiCharacterDesc', language)}</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-3">
-                <h4 className="font-medium text-gray-800 text-sm mb-1">📝 话题管理</h4>
-                <p className="text-xs text-gray-600">创建和管理多个话题，保存精彩讨论</p>
+                <h4 className="font-medium text-gray-800 text-sm mb-1">📝 {t('about.topicManagement', language)}</h4>
+                <p className="text-xs text-gray-600">{t('about.topicManagementDesc', language)}</p>
               </div>
             </div>
           </section>
@@ -69,7 +71,7 @@ function AboutModal({ onClose }) {
               <svg className="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
-              支持的 AI 厂商
+              {t('about.supportedProviders', language)}
             </h3>
             <div className="grid grid-cols-3 gap-2 text-xs text-gray-600">
               <div className="flex items-center">
@@ -126,8 +128,8 @@ function AboutModal({ onClose }) {
           {/* 版本信息 */}
           <section className="border-t border-gray-200 pt-4">
             <div className="flex items-center justify-between text-xs text-gray-500">
-              <span>版本：1.0.0</span>
-              <span>更新日期：2026.03</span>
+              <span>{t('about.version', language)}: 1.0.0</span>
+              <span>{t('about.updateDate', language)}: 2026.03</span>
             </div>
           </section>
         </div>
@@ -137,7 +139,7 @@ function AboutModal({ onClose }) {
             onClick={onClose}
             className="px-6 py-2 bg-gray-800 hover:bg-gray-700 text-white text-sm rounded-lg transition-all"
           >
-            关闭
+            {t('action.close', language)}
           </button>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useForumStore, CHARACTER_CATEGORIES, CATEGORY_NAMES } from '../store';
 import { providers, models } from './SettingsPanel';
+import { t } from '../i18n';
 
 function CharacterPanel({ full = false }) {
   const [selectedCategory, setSelectedCategory] = useState(CHARACTER_CATEGORIES.ALL);
@@ -15,6 +16,8 @@ function CharacterPanel({ full = false }) {
   const [saveConfig, setSaveConfig] = useState(false);
   const [showAIConfigPanel, setShowAIConfigPanel] = useState(false);
   const [expandedView, setExpandedView] = useState(false);
+  
+  const { language } = useForumStore();
   
   const defaultModel = 'gpt-5.4-thinking';
   
@@ -146,13 +149,13 @@ function CharacterPanel({ full = false }) {
     return (
       <div className="bg-white/90 backdrop-blur-md rounded-xl p-6 border border-gray-200 shadow-lg">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">角色管理</h2>
+          <h2 className="text-2xl font-bold text-gray-800">{t('character.management', language) || '角色管理'}</h2>
         </div>
 
         <div className="mb-4 bg-white/60 rounded-lg p-4 border border-gray-200">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm text-gray-600 font-medium">
-              {CATEGORY_NAMES[selectedCategory]}: <span className="text-gray-800">{getActiveCount(selectedCategory)}/{getCategoryCount(selectedCategory)}</span> 已激活
+              {t('category.current', language) || CATEGORY_NAMES[selectedCategory]}: <span className="text-gray-800">{getActiveCount(selectedCategory)}/{getCategoryCount(selectedCategory)}</span> {t('character.activated', language) || '已激活'}
             </span>
             <div className="flex items-center space-x-2">
               <select
@@ -160,20 +163,20 @@ function CharacterPanel({ full = false }) {
                 onChange={(e) => setSortBy(e.target.value)}
                 className="bg-white border border-gray-300 rounded px-3 py-1.5 text-sm text-gray-700"
               >
-                <option value="popularity">按知名度排序</option>
-                <option value="name">按名字排序</option>
+                <option value="popularity">{t('character.sortByPopularity', language) || '按知名度排序'}</option>
+                <option value="name">{t('character.sortByName', language) || '按名字排序'}</option>
               </select>
               <button
                 onClick={handleSelectAll}
                 className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white text-sm rounded transition-all shadow-sm"
               >
-                全选
+                {t('character.selectAll', language)}
               </button>
               <button
                 onClick={handleDeselectAll}
                 className="px-3 py-1.5 bg-gray-500 hover:bg-gray-600 text-white text-sm rounded transition-all"
               >
-                清空
+                {t('character.clear', language) || '清空'}
               </button>
             </div>
           </div>
@@ -272,7 +275,7 @@ function CharacterPanel({ full = false }) {
       }`}>
         <div className="bg-white/90 backdrop-blur-md rounded-xl border-2 border-gray-200 shadow-lg h-full flex flex-col">
           <div className="px-4 pt-4 pb-2 flex items-center justify-between">
-            <h2 className="text-lg font-bold text-gray-800">角色选择</h2>
+            <h2 className="text-lg font-bold text-gray-800">{t('character.select', language) || '角色选择'}</h2>
             <button
               onClick={() => setExpandedView(!expandedView)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
@@ -281,7 +284,7 @@ function CharacterPanel({ full = false }) {
                   : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
               }`}
             >
-              {expandedView ? '收起' : '展开'}
+              {expandedView ? (t('action.collapse', language) || '收起') : (t('action.expand', language) || '展开')}
             </button>
           </div>
           
@@ -301,7 +304,7 @@ function CharacterPanel({ full = false }) {
                       : 'bg-gray-200 hover:bg-gray-300 text-gray-600'
                   }`}
                 >
-                  {name} ({count})
+                  {t(`category.${key}`, language) || name} ({count})
                 </button>
               );
             })}
@@ -313,8 +316,8 @@ function CharacterPanel({ full = false }) {
               onChange={(e) => setSortBy(e.target.value)}
               className="bg-white border border-gray-300 rounded px-2 py-1 text-xs text-gray-700"
             >
-              <option value="popularity">按知名度</option>
-              <option value="name">按字母</option>
+              <option value="popularity">{t('character.sortByPopularity', language) || '按知名度'}</option>
+              <option value="name">{t('character.sortByName', language) || '按字母'}</option>
             </select>
             <div className="flex items-center space-x-1">
               <button
@@ -474,14 +477,14 @@ function AIConfigPanel({ character, onBack, onSave }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <h2 className="text-lg font-bold text-gray-800">AI 配置</h2>
+          <h2 className="text-lg font-bold text-gray-800">{t('settings.title', language) || 'AI 配置'}</h2>
         </div>
-        <p className="text-xs text-gray-500 mt-1">为 {character?.name} 配置 AI 模型</p>
+        <p className="text-xs text-gray-500 mt-1">{t('character.configureFor', language) || '为'} {character?.name} {t('character.configureAI', language) || '配置 AI 模型'}</p>
       </div>
       
       <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
         <div>
-          <label className="block text-xs text-gray-500 mb-1">服务商</label>
+          <label className="block text-xs text-gray-500 mb-1">{t('settings.provider', language)}</label>
           <select
             value={configProvider}
             onChange={(e) => {
@@ -497,18 +500,18 @@ function AIConfigPanel({ character, onBack, onSave }) {
         </div>
         
         <div>
-          <label className="block text-xs text-gray-500 mb-1">API Key</label>
+          <label className="block text-xs text-gray-500 mb-1">{t('settings.apiKey', language)}</label>
           <input
             type="password"
             value={configApiKey}
             onChange={(e) => setConfigApiKey(e.target.value)}
-            placeholder={`输入 ${providers.find(p => p.id === configProvider)?.name} API Key`}
+            placeholder={`${providers.find(p => p.id === configProvider)?.name} ${t('settings.placeholder.apiKey', language) || 'API Key'}`}
             className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-800"
           />
         </div>
         
         <div>
-          <label className="block text-xs text-gray-500 mb-1">模型</label>
+          <label className="block text-xs text-gray-500 mb-1">{t('settings.model', language)}</label>
           <select
             value={configModel}
             onChange={(e) => setConfigModel(e.target.value)}
@@ -543,7 +546,7 @@ function AIConfigPanel({ character, onBack, onSave }) {
         
         {apiConfigs.length > 0 && (
           <div className="pt-2">
-            <p className="text-xs text-gray-500 mb-2">或使用已有配置：</p>
+            <p className="text-xs text-gray-500 mb-2">{t('settings.orUseExisting', language)}</p>
             <div className="space-y-1">
               {apiConfigs.map((config) => (
                 <button
@@ -569,7 +572,7 @@ function AIConfigPanel({ character, onBack, onSave }) {
           disabled={!configApiKey.trim()}
           className="w-full px-4 py-2.5 bg-gray-800 hover:bg-gray-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-all shadow-md"
         >
-          保存配置
+          {t('settings.saveConfig', language)}
         </button>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useForumStore } from './store';
+import { languages, t } from './i18n';
 import ChatPanel from './components/ChatPanel';
 import SettingsPanel from './components/SettingsPanel';
 import TopicCharacterPanel from './components/TopicCharacterPanel';
@@ -16,13 +17,22 @@ function App() {
     currentTopicId, 
     topics,
     apiConfigs,
-    dialogSettings
+    dialogSettings,
+    language,
+    setLanguage,
+    initStorage
   } = useForumStore();
+  
+  // 初始化存储
+  useEffect(() => {
+    initStorage();
+  }, [initStorage]);
   
   const [activeTab, setActiveTab] = useState('chat');
   const [hasTopics, setHasTopics] = useState(topics.length > 0);
   const [showAbout, setShowAbout] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
+  const [showTopicPanel, setShowTopicPanel] = useState(true);
   const [user, setUser] = useState(null);
   const [loginLoading, setLoginLoading] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -47,6 +57,18 @@ function App() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showMenu]);
+  
+  // 监听话题面板切换事件
+  useEffect(() => {
+    const handleToggleTopicPanel = () => {
+      setShowTopicPanel((prev) => !prev);
+    };
+
+    window.addEventListener('toggleTopicPanel', handleToggleTopicPanel);
+    return () => {
+      window.removeEventListener('toggleTopicPanel', handleToggleTopicPanel);
+    };
+  }, []);
   
   // 初始化 Netlify Identity
   useEffect(() => {
@@ -239,16 +261,30 @@ function App() {
   }, [topics]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-gray-50 to-slate-200">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-gray-50 to-slate-200 overflow-hidden">
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-300/50 shadow-sm z-50 relative">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="max-w-7xl mx-auto px-4 py-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-700 to-gray-500 bg-clip-text text-transparent">圆桌</h1>
-              <span className="text-sm text-gray-500">与伟人对话的思想平台</span>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-700 to-gray-500 bg-clip-text text-transparent">{t('nav.roundtable', language)}</h1>
+              <span className="text-sm text-gray-500">{t('about.description', language)}</span>
             </div>
             
             <div className="flex items-center space-x-2">
+              {/* 语言选择器 */}
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="px-3 py-1.5 bg-transparent text-gray-700 hover:bg-white/60 transition-all text-sm focus:outline-none cursor-pointer font-medium"
+                title={t('language.select', language)}
+              >
+                {languages.map((lang) => (
+                  <option key={lang.code} value={lang.code}>
+                    {lang.name}
+                  </option>
+                ))}
+              </select>
+              
               {/* 圆桌图标 */}
               <button
                 onClick={() => setActiveTab('chat')}
@@ -257,7 +293,7 @@ function App() {
                     ? 'bg-gray-800 text-white shadow-lg'
                     : 'bg-white/60 text-gray-600 hover:bg-white/80 hover:shadow-sm'
                 }`}
-                title="圆桌"
+                title={t('nav.roundtable', language)}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -272,7 +308,7 @@ function App() {
                     ? 'bg-gray-800 text-white shadow-lg'
                     : 'bg-white/60 text-gray-600 hover:bg-white/80 hover:shadow-sm'
                 }`}
-                title="设置"
+                title={t('nav.settings', language)}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -285,7 +321,7 @@ function App() {
                 <button
                   onClick={() => setShowMenu(!showMenu)}
                   className="p-2.5 rounded-lg bg-white/60 text-gray-600 hover:bg-white/80 hover:shadow-sm transition-all"
-                  title="菜单"
+                  title={t('nav.menu', language) || '菜单'}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -306,7 +342,7 @@ function App() {
                       <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                       </svg>
-                      <span className="font-medium">指南</span>
+                      <span className="font-medium">{t('nav.guide', language)}</span>
                     </button>
                     
                     {/* 关于项目 */}
@@ -320,7 +356,7 @@ function App() {
                       <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      <span className="font-medium">关于项目</span>
+                      <span className="font-medium">{t('nav.about', language)}</span>
                     </button>
                     
                     {/* 支持我们 */}
@@ -334,7 +370,7 @@ function App() {
                       <svg className="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                       </svg>
-                      <span className="font-medium">支持我们</span>
+                      <span className="font-medium">{t('nav.support', language)}</span>
                     </button>
                     
                     <div className="border-t border-gray-200 my-2"></div>
@@ -360,7 +396,7 @@ function App() {
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                           </svg>
-                          <span className="font-medium">退出登录</span>
+                          <span className="font-medium">{t('nav.logout', language)}</span>
                         </button>
                       </>
                     ) : (
@@ -374,7 +410,7 @@ function App() {
                         <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                         </svg>
-                        <span className="font-medium">登录</span>
+                        <span className="font-medium">{t('nav.login', language)}</span>
                       </button>
                     )}
                   </div>
@@ -385,27 +421,17 @@ function App() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-6">
+      <main className="max-w-7xl mx-auto px-4 py-2">
         {activeTab === 'chat' && (
-          <div className={`grid gap-4 h-[calc(100vh-180px)] transition-all duration-300 ${
-            hasTopics && currentTopicId
-              ? 'grid-cols-1 lg:grid-cols-4'
-              : 'grid-cols-1 lg:grid-cols-3'
-          }`}>
-            <div className={`overflow-hidden transition-all duration-300 ${
-              hasTopics && currentTopicId
-                ? 'lg:col-span-3'
-                : 'lg:col-span-2'
-            }`}>
-              <ChatPanel />
+          <div className="flex gap-4 h-[calc(100vh-72px)] transition-all duration-300">
+            {/* 话题侧边栏 */}
+            <div className={`overflow-hidden transition-all duration-300 ${showTopicPanel ? 'w-80' : 'w-0'} flex-shrink-0`}>
+              {showTopicPanel && <TopicCharacterPanel />}
             </div>
 
-            <div className={`overflow-hidden transition-all duration-300 ${
-              hasTopics && currentTopicId
-                ? 'lg:col-span-1'
-                : 'lg:col-span-1'
-            }`}>
-              <TopicCharacterPanel />
+            {/* 聊天主区域 */}
+            <div className="flex-1 overflow-hidden transition-all duration-300 min-w-0 [&::-webkit-scrollbar]:hidden">
+              <ChatPanel />
             </div>
           </div>
         )}

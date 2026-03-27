@@ -1,25 +1,28 @@
 import React, { useState } from 'react';
+import { useForumStore } from '../store';
+import { t } from '../i18n';
 import { aiGuideData } from '../data/aiGuideData';
 
 const UsageGuide = ({ onClose }) => {
+  const { language } = useForumStore();
   const [activeSection, setActiveSection] = useState('guide');
   const [activeTab, setActiveTab] = useState('overview');
   const [aiActiveTab, setAiActiveTab] = useState('basics');
 
   const guideTabs = [
-    { id: 'overview', label: '快速入门' },
-    { id: 'ai-config', label: 'AI 配置' },
-    { id: 'characters', label: '人物设置' },
-    { id: 'topics', label: '创建话题' },
-    { id: 'conversation', label: '开始对话' },
+    { id: 'overview', label: t('guide.quickStart', language) },
+    { id: 'ai-config', label: t('guide.aiConfig', language) },
+    { id: 'characters', label: t('guide.characters', language) },
+    { id: 'topics', label: t('guide.topics', language) },
+    { id: 'conversation', label: t('guide.conversation', language) },
   ];
 
   const aiTabs = [
-    { id: 'basics', label: '基础技巧' },
-    { id: 'advanced', label: '高级技巧' },
-    { id: 'scenarios', label: '场景示例' },
-    { id: 'mistakes', label: '常见误区' },
-    { id: 'optimize', label: '一键优化' }
+    { id: 'basics', label: t('guide.basicsTitle', language) },
+    { id: 'advanced', label: t('guide.advancedTitle', language) },
+    { id: 'scenarios', label: t('guide.scenariosTitle', language) },
+    { id: 'mistakes', label: t('guide.mistakesTitle', language) },
+    { id: 'optimize', label: t('guide.optimizeTitle', language) }
   ];
 
   const renderGuideContent = () => {
@@ -28,9 +31,9 @@ const UsageGuide = ({ onClose }) => {
         return (
           <div className="space-y-6">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <h3 className="text-xl font-bold text-blue-800 mb-4">欢迎使用圆桌！</h3>
+              <h3 className="text-xl font-bold text-blue-800 mb-4">{t('guide.welcome', language)}</h3>
               <p className="text-blue-700 mb-4">
-                圆桌是一个让不同时代、不同领域的伟人通过 AI 进行思想碰撞的平台。
+                {t('guide.welcomeDesc', language)}
               </p>
               <div className="grid md:grid-cols-3 gap-4">
                 <div className="bg-white p-4 rounded-lg">
@@ -39,8 +42,8 @@ const UsageGuide = ({ onClose }) => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                   </div>
-                  <h4 className="font-bold text-gray-800 mb-2 text-center">选择人物</h4>
-                  <p className="text-sm text-gray-600">从 74+ 位历史伟人中选择参与对话的角色</p>
+                  <h4 className="font-bold text-gray-800 mb-2 text-center">{t('guide.selectCharacters', language)}</h4>
+                  <p className="text-sm text-gray-600">{t('guide.selectCharactersDesc', language)}</p>
                 </div>
                 <div className="bg-white p-4 rounded-lg">
                   <div className="text-3xl mb-2 flex justify-center">
@@ -48,8 +51,8 @@ const UsageGuide = ({ onClose }) => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                   </div>
-                  <h4 className="font-bold text-gray-800 mb-2 text-center">配置 AI</h4>
-                  <p className="text-sm text-gray-600">为每个人物选择 AI 服务商和模型</p>
+                  <h4 className="font-bold text-gray-800 mb-2 text-center">{t('guide.configAI', language)}</h4>
+                  <p className="text-sm text-gray-600">{t('guide.configAIDesc', language)}</p>
                 </div>
                 <div className="bg-white p-4 rounded-lg">
                   <div className="text-3xl mb-2 flex justify-center">
@@ -57,41 +60,41 @@ const UsageGuide = ({ onClose }) => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
                   </div>
-                  <h4 className="font-bold text-gray-800 mb-2 text-center">开始对话</h4>
-                  <p className="text-sm text-gray-600">提出问题，让伟人们展开讨论</p>
+                  <h4 className="font-bold text-gray-800 mb-2 text-center">{t('guide.startConversation', language)}</h4>
+                  <p className="text-sm text-gray-600">{t('guide.startConversationDesc', language)}</p>
                 </div>
               </div>
             </div>
 
             <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">快速开始</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-4">{t('guide.quickStartTitle', language)}</h3>
               <div className="space-y-4">
                 <div className="flex items-start">
                   <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">1</div>
                   <div>
-                    <h4 className="font-bold text-gray-800">配置 AI</h4>
-                    <p className="text-gray-600 text-sm">点击设置图标，配置至少一个 AI 服务商（推荐 MiniMax 或通义千问）</p>
+                    <h4 className="font-bold text-gray-800">{t('guide.step1', language)}</h4>
+                    <p className="text-gray-600 text-sm">{t('guide.step1Desc', language)}</p>
                   </div>
                 </div>
                 <div className="flex items-start">
                   <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">2</div>
                   <div>
-                    <h4 className="font-bold text-gray-800">选择人物</h4>
-                    <p className="text-gray-600 text-sm">在右侧面板选择参与讨论的伟人角色</p>
+                    <h4 className="font-bold text-gray-800">{t('guide.step2', language)}</h4>
+                    <p className="text-gray-600 text-sm">{t('guide.step2Desc', language)}</p>
                   </div>
                 </div>
                 <div className="flex items-start">
                   <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">3</div>
                   <div>
-                    <h4 className="font-bold text-gray-800">创建话题</h4>
-                    <p className="text-gray-600 text-sm">输入一个讨论主题，如"人工智能的未来"</p>
+                    <h4 className="font-bold text-gray-800">{t('guide.step3', language)}</h4>
+                    <p className="text-gray-600 text-sm">{t('guide.step3Desc', language)}</p>
                   </div>
                 </div>
                 <div className="flex items-start">
                   <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">4</div>
                   <div>
-                    <h4 className="font-bold text-gray-800">开始对话</h4>
-                    <p className="text-gray-600 text-sm">在输入框提出问题，AI 角色会自动讨论</p>
+                    <h4 className="font-bold text-gray-800">{t('guide.step4', language)}</h4>
+                    <p className="text-gray-600 text-sm">{t('guide.step4Desc', language)}</p>
                   </div>
                 </div>
               </div>
@@ -103,70 +106,70 @@ const UsageGuide = ({ onClose }) => {
         return (
           <div className="space-y-6">
             <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">配置 AI 服务商</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-4">{t('guide.configProvider', language)}</h3>
               <p className="text-gray-600 mb-4">
-                在开始对话前，您需要为每个人物配置 AI 服务商。每个角色可以有不同的 AI 配置。
+                {t('guide.configProviderDesc', language)}
               </p>
               
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                <h4 className="font-bold text-yellow-800 mb-2">推荐配置</h4>
+                <h4 className="font-bold text-yellow-800 mb-2">{t('guide.recommendedConfig', language)}</h4>
                 <ul className="text-sm text-yellow-700 space-y-1">
-                  <li>• <strong>MiniMax</strong> - 性价比高，国内可直接访问</li>
-                  <li>• <strong>通义千问 (Qwen)</strong> - 阿里出品，响应快速</li>
-                  <li>• <strong>智谱 GLM</strong> - 清华大学技术背景，效果稳定</li>
+                  <li>• <strong>MiniMax</strong> - {t('guide.minimaxHint', language) || '性价比高，国内可直接访问'}</li>
+                  <li>• <strong>OpenAI</strong> - {t('guide.openaiHint', language) || '质量最高，需要翻墙'}</li>
+                  <li>• <strong>Claude</strong> - {t('guide.claudeHint', language) || '推理能力强'}</li>
                 </ul>
               </div>
 
-              <h4 className="font-bold text-gray-800 mb-3">配置步骤</h4>
+              <h4 className="font-bold text-gray-800 mb-3">{t('guide.configSteps', language)}</h4>
               <div className="space-y-4">
                 <div className="flex items-start">
                   <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">1</div>
                   <div>
-                    <h4 className="font-bold text-gray-800">获取 API Key</h4>
-                    <p className="text-gray-600 text-sm">访问 AI 服务商官网，注册账号并获取 API Key</p>
+                    <h4 className="font-bold text-gray-800">{t('guide.getAPIKey', language)}</h4>
+                    <p className="text-gray-600 text-sm">{t('guide.getAPIKeyDesc', language)}</p>
                   </div>
                 </div>
                 <div className="flex items-start">
                   <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">2</div>
                   <div>
-                    <h4 className="font-bold text-gray-800">打开设置</h4>
-                    <p className="text-gray-600 text-sm">点击顶部的 ⚙️ 设置图标</p>
+                    <h4 className="font-bold text-gray-800">{t('guide.openSettings', language)}</h4>
+                    <p className="text-gray-600 text-sm">{t('guide.openSettingsDesc', language)}</p>
                   </div>
                 </div>
                 <div className="flex items-start">
                   <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">3</div>
                   <div>
-                    <h4 className="font-bold text-gray-800">添加配置</h4>
-                    <p className="text-gray-600 text-sm">在 AI 配置区域，点击"添加配置"，选择服务商并粘贴 API Key</p>
+                    <h4 className="font-bold text-gray-800">{t('guide.addConfig', language)}</h4>
+                    <p className="text-gray-600 text-sm">{t('guide.addConfigDesc', language)}</p>
                   </div>
                 </div>
                 <div className="flex items-start">
                   <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">4</div>
                   <div>
-                    <h4 className="font-bold text-gray-800">保存配置</h4>
-                    <p className="text-gray-600 text-sm">点击保存，配置会自动保存到云端（需登录）</p>
+                    <h4 className="font-bold text-gray-800">{t('guide.saveConfig', language)}</h4>
+                    <p className="text-gray-600 text-sm">{t('guide.saveConfigDesc', language)}</p>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">推荐 AI 模型</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-4">{t('guide.recommendedModels', language)}</h3>
               <div className="space-y-3">
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h4 className="font-bold text-gray-800">MiniMax</h4>
-                  <p className="text-sm text-gray-600">推荐模型：abab6.5s-chat</p>
-                  <p className="text-xs text-gray-500 mt-1">价格实惠，国内访问快</p>
+                  <p className="text-sm text-gray-600">{t('guide.minimaxModel', language) || '推荐模型：abab6.5s-chat'}</p>
+                  <p className="text-xs text-gray-500 mt-1">{t('guide.minimaxAdvantage', language) || '价格实惠，国内访问快'}</p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-bold text-gray-800">通义千问 (Qwen)</h4>
-                  <p className="text-sm text-gray-600">推荐模型：qwen-turbo</p>
-                  <p className="text-xs text-gray-500 mt-1">阿里出品，响应快速</p>
+                  <h4 className="font-bold text-gray-800">OpenAI</h4>
+                  <p className="text-sm text-gray-600">{t('guide.openaiModel', language) || '推荐模型：gpt-4o / gpt-4o-mini'}</p>
+                  <p className="text-xs text-gray-500 mt-1">{t('guide.openaiAdvantage', language) || '质量最高，但需要翻墙'}</p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-bold text-gray-800">智谱 GLM</h4>
-                  <p className="text-sm text-gray-600">推荐模型：glm-4</p>
-                  <p className="text-xs text-gray-500 mt-1">清华大学技术背景，效果稳定</p>
+                  <h4 className="font-bold text-gray-800">Claude</h4>
+                  <p className="text-sm text-gray-600">{t('guide.claudeModel', language) || '推荐模型：claude-3-5-sonnet'}</p>
+                  <p className="text-xs text-gray-500 mt-1">{t('guide.claudeAdvantage', language) || '推理能力强，适合复杂问题'}</p>
                 </div>
               </div>
             </div>
@@ -177,66 +180,66 @@ const UsageGuide = ({ onClose }) => {
         return (
           <div className="space-y-6">
             <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">选择人物</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-4">{t('guide.selectCharactersTitle', language)}</h3>
               <p className="text-gray-600 mb-4">
-                圆桌提供了 74+ 位历史伟人，涵盖商业、哲学、科学、文学、政治、科技等领域。
+                {t('guide.selectCharactersIntro', language)}
               </p>
 
-              <h4 className="font-bold text-gray-800 mb-3">选择步骤</h4>
+              <h4 className="font-bold text-gray-800 mb-3">{t('guide.selectSteps', language)}</h4>
               <div className="space-y-4">
                 <div className="flex items-start">
                   <div className="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">1</div>
                   <div>
-                    <h4 className="font-bold text-gray-800">打开人物面板</h4>
-                    <p className="text-gray-600 text-sm">在右侧找到"选择人物"区域</p>
+                    <h4 className="font-bold text-gray-800">{t('guide.openPanel', language)}</h4>
+                    <p className="text-gray-600 text-sm">{t('guide.openPanelDesc', language)}</p>
                   </div>
                 </div>
                 <div className="flex items-start">
                   <div className="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">2</div>
                   <div>
-                    <h4 className="font-bold text-gray-800">筛选分类</h4>
-                    <p className="text-gray-600 text-sm">点击分类标签（商业/哲学/科学/文学/政治/科技）筛选人物</p>
+                    <h4 className="font-bold text-gray-800">{t('guide.filterCategory', language)}</h4>
+                    <p className="text-gray-600 text-sm">{t('guide.filterCategoryDesc', language)}</p>
                   </div>
                 </div>
                 <div className="flex items-start">
                   <div className="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">3</div>
                   <div>
-                    <h4 className="font-bold text-gray-800">勾选人物</h4>
-                    <p className="text-gray-600 text-sm">勾选您希望参与讨论的人物（最多 8 人）</p>
+                    <h4 className="font-bold text-gray-800">{t('guide.checkCharacters', language)}</h4>
+                    <p className="text-gray-600 text-sm">{t('guide.maxCharacters', language)}</p>
                   </div>
                 </div>
                 <div className="flex items-start">
                   <div className="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">4</div>
                   <div>
-                    <h4 className="font-bold text-gray-800">配置 AI</h4>
-                    <p className="text-gray-600 text-sm">为每个人物配置 AI 服务商，或使用全局默认配置</p>
+                    <h4 className="font-bold text-gray-800">{t('guide.configAI', language)}</h4>
+                    <p className="text-gray-600 text-sm">{t('guide.configAIForChars', language)}</p>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">人物与 AI 搭配建议</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-4">{t('guide.characterAIMatches', language)}</h3>
               <div className="space-y-4">
                 <div className="bg-green-50 p-4 rounded-lg">
-                  <h4 className="font-bold text-green-800 mb-2">哲学讨论</h4>
-                  <p className="text-sm text-green-700">推荐：孔子 + 柏拉图 + 亚里士多德</p>
-                  <p className="text-xs text-green-600 mt-1">使用智谱 GLM 模型，推理能力强</p>
+                  <h4 className="font-bold text-green-800 mb-2">{t('guide.philosophyDiscussion', language)}</h4>
+                  <p className="text-sm text-green-700">{t('guide.philosophyRecommend', language)}</p>
+                  <p className="text-xs text-green-600 mt-1">{t('guide.claudeReasoning', language)}</p>
                 </div>
                 <div className="bg-blue-50 p-4 rounded-lg">
-                  <h4 className="font-bold text-blue-800 mb-2">商业谈判</h4>
-                  <p className="text-sm text-blue-700">推荐：马云 + 乔布斯 + 巴菲特</p>
-                  <p className="text-xs text-blue-600 mt-1">使用通义千问模型，创意丰富</p>
+                  <h4 className="font-bold text-blue-800 mb-2">{t('guide.businessNegotiation', language)}</h4>
+                  <p className="text-sm text-blue-700">{t('guide.businessRecommend', language)}</p>
+                  <p className="text-xs text-blue-600 mt-1">{t('guide.gpt5Creative', language)}</p>
                 </div>
                 <div className="bg-yellow-50 p-4 rounded-lg">
-                  <h4 className="font-bold text-yellow-800 mb-2">科技创新</h4>
-                  <p className="text-sm text-yellow-700">推荐：爱因斯坦 + 图灵 + 马斯克</p>
-                  <p className="text-xs text-yellow-600 mt-1">可混合使用多个模型</p>
+                  <h4 className="font-bold text-yellow-800 mb-2">{t('guide.techInnovation', language)}</h4>
+                  <p className="text-sm text-yellow-700">{t('guide.techRecommend', language)}</p>
+                  <p className="text-xs text-yellow-600 mt-1">{t('guide.mixedModels', language)}</p>
                 </div>
                 <div className="bg-purple-50 p-4 rounded-lg">
-                  <h4 className="font-bold text-purple-800 mb-2">文学创作</h4>
-                  <p className="text-sm text-purple-700">推荐：鲁迅 + 莎士比亚 + 托尔斯泰</p>
-                  <p className="text-xs text-purple-600 mt-1">使用 MiniMax 模型，文采出众</p>
+                  <h4 className="font-bold text-purple-800 mb-2">{t('guide.literaryCreation', language)}</h4>
+                  <p className="text-sm text-purple-700">{t('guide.literaryRecommend', language)}</p>
+                  <p className="text-xs text-purple-600 mt-1">{t('guide.minimaxLiterary', language)}</p>
                 </div>
               </div>
             </div>
@@ -247,58 +250,58 @@ const UsageGuide = ({ onClose }) => {
         return (
           <div className="space-y-6">
             <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">创建话题</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-4">{t('guide.createTopicTitle', language)}</h3>
               <p className="text-gray-600 mb-4">
-                话题是讨论的核心，一个好的话题能让 AI 角色展开精彩的对话。
+                {t('guide.createTopicIntro', language)}
               </p>
 
-              <h4 className="font-bold text-gray-800 mb-3">创建步骤</h4>
+              <h4 className="font-bold text-gray-800 mb-3">{t('guide.createStepsTitle', language)}</h4>
               <div className="space-y-4">
                 <div className="flex items-start">
                   <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">1</div>
                   <div>
-                    <h4 className="font-bold text-gray-800">点击新建话题</h4>
-                    <p className="text-gray-600 text-sm">在右侧面板点击"新建话题"按钮</p>
+                    <h4 className="font-bold text-gray-800">{t('guide.clickNewTopic', language)}</h4>
+                    <p className="text-gray-600 text-sm">{t('guide.clickNewTopicDesc', language)}</p>
                   </div>
                 </div>
                 <div className="flex items-start">
                   <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">2</div>
                   <div>
-                    <h4 className="font-bold text-gray-800">输入话题标题</h4>
-                    <p className="text-gray-600 text-sm">输入一个清晰的话题，如"人工智能的未来发展"</p>
+                    <h4 className="font-bold text-gray-800">{t('guide.enterTitle', language)}</h4>
+                    <p className="text-gray-600 text-sm">{t('guide.enterTitleDesc', language)}</p>
                   </div>
                 </div>
                 <div className="flex items-start">
                   <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">3</div>
                   <div>
-                    <h4 className="font-bold text-gray-800">添加描述（可选）</h4>
-                    <p className="text-gray-600 text-sm">添加背景信息，帮助 AI 更好地理解话题</p>
+                    <h4 className="font-bold text-gray-800">{t('guide.addDescription', language)}</h4>
+                    <p className="text-gray-600 text-sm">{t('guide.addDescriptionDesc', language)}</p>
                   </div>
                 </div>
                 <div className="flex items-start">
                   <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">4</div>
                   <div>
-                    <h4 className="font-bold text-gray-800">确认创建</h4>
-                    <p className="text-gray-600 text-sm">点击确定，话题创建完成</p>
+                    <h4 className="font-bold text-gray-800">{t('guide.confirmCreate', language)}</h4>
+                    <p className="text-gray-600 text-sm">{t('guide.confirmCreateDesc', language)}</p>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">好的话题示例</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-4">{t('guide.goodTopicExamples', language)}</h3>
               <div className="space-y-3">
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-bold text-gray-800">人工智能会取代人类工作吗？</h4>
-                  <p className="text-xs text-gray-500 mt-1">适合讨论：技术发展、社会影响、职业未来</p>
+                  <h4 className="font-bold text-gray-800">{t('guide.topicExample1', language) || '人工智能会取代人类工作吗？'}</h4>
+                  <p className="text-xs text-gray-500 mt-1">{t('guide.topicExample1Desc', language) || '适合讨论：技术发展、社会影响、职业未来'}</p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-bold text-gray-800">儒家思想与现代管理</h4>
-                  <p className="text-xs text-gray-500 mt-1">适合讨论：传统文化、企业管理、领导力</p>
+                  <h4 className="font-bold text-gray-800">{t('guide.topicExample2', language) || '儒家思想与现代管理'}</h4>
+                  <p className="text-xs text-gray-500 mt-1">{t('guide.topicExample2Desc', language) || '适合讨论：传统文化、企业管理、领导力'}</p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-bold text-gray-800">如果爱因斯坦和马斯克对话</h4>
-                  <p className="text-xs text-gray-500 mt-1">适合讨论：科技创新、物理学、未来趋势</p>
+                  <h4 className="font-bold text-gray-800">{t('guide.topicExample3', language) || '如果爱因斯坦和马斯克对话'}</h4>
+                  <p className="text-xs text-gray-500 mt-1">{t('guide.topicExample3Desc', language) || '适合讨论：科技创新、物理学、未来趋势'}</p>
                 </div>
               </div>
             </div>
@@ -309,52 +312,52 @@ const UsageGuide = ({ onClose }) => {
         return (
           <div className="space-y-6">
             <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">开始对话</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-4">{t('guide.startConversationTitle', language)}</h3>
 
-              <h4 className="font-bold text-gray-800 mb-3">对话步骤</h4>
+              <h4 className="font-bold text-gray-800 mb-3">{t('guide.conversationSteps', language)}</h4>
               <div className="space-y-4">
                 <div className="flex items-start">
                   <div className="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">1</div>
                   <div>
-                    <h4 className="font-bold text-gray-800">确保条件满足</h4>
-                    <p className="text-gray-600 text-sm">已选择人物 + 已创建话题 + 已配置 AI</p>
+                    <h4 className="font-bold text-gray-800">{t('guide.ensureReady', language)}</h4>
+                    <p className="text-gray-600 text-sm">{t('guide.ensureReadyDesc', language)}</p>
                   </div>
                 </div>
                 <div className="flex items-start">
                   <div className="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">2</div>
                   <div>
-                    <h4 className="font-bold text-gray-800">输入问题</h4>
-                    <p className="text-gray-600 text-sm">在底部输入框提出问题</p>
+                    <h4 className="font-bold text-gray-800">{t('guide.enterQuestion', language)}</h4>
+                    <p className="text-gray-600 text-sm">{t('guide.enterQuestionDesc', language)}</p>
                   </div>
                 </div>
                 <div className="flex items-start">
                   <div className="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">3</div>
                   <div>
-                    <h4 className="font-bold text-gray-800">发送问题</h4>
-                    <p className="text-gray-600 text-sm">点击发送按钮或按回车键</p>
+                    <h4 className="font-bold text-gray-800">{t('guide.sendQuestion', language)}</h4>
+                    <p className="text-gray-600 text-sm">{t('guide.sendQuestionDesc', language)}</p>
                   </div>
                 </div>
                 <div className="flex items-start">
                   <div className="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">4</div>
                   <div>
-                    <h4 className="font-bold text-gray-800">观看讨论</h4>
-                    <p className="text-gray-600 text-sm">AI 角色会根据设定进行讨论</p>
+                    <h4 className="font-bold text-gray-800">{t('guide.watchDiscussion', language)}</h4>
+                    <p className="text-gray-600 text-sm">{t('guide.watchDiscussionDesc', language)}</p>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">使用技巧</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-4">{t('guide.usageTips', language)}</h3>
               <div className="space-y-4">
                 <div className="bg-blue-50 p-4 rounded-lg">
                   <h4 className="font-bold text-blue-800 mb-2 flex items-center">
                     <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                     </svg>
-                    一键优化
+                    {t('guide.oneClickOptimize', language)}
                   </h4>
-                  <p className="text-sm text-blue-700">点击输入框旁边的星星按钮，AI 会自动优化您的问题，让回答更精准</p>
+                  <p className="text-sm text-blue-700">{t('guide.oneClickOptimizeDesc', language)}</p>
                 </div>
                 <div className="bg-green-50 p-4 rounded-lg">
                   <h4 className="font-bold text-green-800 mb-2 flex items-center">
@@ -362,32 +365,32 @@ const UsageGuide = ({ onClose }) => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    图片输入
+                    {t('guide.imageInput', language)}
                   </h4>
-                  <p className="text-sm text-green-700">点击相机图标可以上传图片，AI 会分析图片内容</p>
+                  <p className="text-sm text-green-700">{t('guide.imageInputDesc', language)}</p>
                 </div>
                 <div className="bg-yellow-50 p-4 rounded-lg">
                   <h4 className="font-bold text-yellow-800 mb-2 flex items-center">
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                     </svg>
-                    语音输入
+                    {t('guide.voiceInputTitle', language)}
                   </h4>
-                  <p className="text-sm text-yellow-700">点击麦克风图标可以语音输入（支持中文）</p>
+                  <p className="text-sm text-yellow-700">{t('guide.voiceInputHint', language)}</p>
                 </div>
               </div>
             </div>
 
             <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">对话设置</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-4">{t('guide.conversationSettings', language)}</h3>
               <p className="text-gray-600 mb-4">
-                在设置中可以调整对话行为：
+                {t('guide.conversationSettingsIntro', language)}
               </p>
               <ul className="space-y-2 text-gray-600 text-sm">
-                <li>• <strong>对话轮数</strong>：控制 AI 发言次数</li>
-                <li>• <strong>发言间隔</strong>：控制每轮发言之间的等待时间</li>
-                <li>• <strong>互动模式</strong>：开启后 AI 可以看到彼此的消息</li>
-                <li>• <strong>角色称呼</strong>：开启后 AI 发言时会互相称呼名字</li>
+                <li>• <strong>{t('guide.turns', language)}</strong>：{t('guide.turnsDesc', language)}</li>
+                <li>• <strong>{t('guide.interval', language)}</strong>：{t('guide.intervalDesc', language)}</li>
+                <li>• <strong>{t('guide.interactiveMode', language)}</strong>：{t('guide.interactiveModeDesc', language)}</li>
+                <li>• <strong>{t('guide.useNames', language)}</strong>：{t('guide.useNamesDesc', language)}</li>
               </ul>
             </div>
           </div>
@@ -603,8 +606,8 @@ const UsageGuide = ({ onClose }) => {
         <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white p-6 rounded-t-2xl flex-shrink-0">
           <div className="flex justify-between items-center">
             <div>
-              <h2 className="text-2xl font-bold">📖 指南</h2>
-              <p className="text-blue-100 text-sm mt-1">使用说明和 AI 对话技巧</p>
+              <h2 className="text-2xl font-bold">{t('guide.title', language)}</h2>
+              <p className="text-blue-100 text-sm mt-1">{t('guide.usageGuideDesc', language) || '使用说明和 AI 对话技巧'}</p>
             </div>
             <button
               onClick={onClose}
@@ -617,7 +620,7 @@ const UsageGuide = ({ onClose }) => {
           </div>
         </div>
 
-        {/* 顶级标签导航 - 使用指南 / AI对话指南 */}
+        {/* 顶级标签导航 - 使用指南 / AI 对话指南 */}
         <div className="bg-gray-50 border-b border-gray-200 px-6 py-3 flex-shrink-0">
           <div className="flex space-x-2">
             <button
@@ -632,7 +635,7 @@ const UsageGuide = ({ onClose }) => {
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
-                使用指南
+                {t('guide.usage', language)}
               </span>
             </button>
             <button
@@ -647,7 +650,7 @@ const UsageGuide = ({ onClose }) => {
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                 </svg>
-                AI 对话指南
+                {t('guide.ai', language)}
               </span>
             </button>
           </div>

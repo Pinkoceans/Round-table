@@ -1,8 +1,9 @@
 import React from 'react';
 import { useForumStore } from '../store';
+import { t } from '../i18n';
 
 function DialogSettings({ onClose }) {
-  const { dialogSettings, setDialogSettings } = useForumStore();
+  const { dialogSettings, setDialogSettings, language } = useForumStore();
 
   const handleChange = (key, value) => {
     setDialogSettings({ [key]: value });
@@ -11,7 +12,7 @@ function DialogSettings({ onClose }) {
   return (
     <div className="bg-white rounded-xl border-2 border-gray-200 shadow-lg h-full flex flex-col">
       <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-        <h2 className="text-lg font-bold text-gray-800">对话设置</h2>
+        <h2 className="text-lg font-bold text-gray-800">{t('dialog.settings', language)}</h2>
         <button
           onClick={onClose}
           className="text-gray-400 hover:text-gray-600 transition-all"
@@ -26,7 +27,7 @@ function DialogSettings({ onClose }) {
         {/* 每轮最高发言次数 */}
         <div className="space-y-3">
           <label className="text-sm font-medium text-gray-700 block">
-            每轮最高发言次数
+            {t('dialog.turns', language)}
           </label>
           <div className="flex items-center space-x-3">
             <input

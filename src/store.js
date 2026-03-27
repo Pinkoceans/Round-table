@@ -7,27 +7,22 @@ const STORAGE_KEYS = {
   ACTIVE_CHARACTERS: 'yuanzhuo_active_characters',
   API_CONFIGS: 'yuanzhuo_api_configs',
   DIALOG_SETTINGS: 'yuanzhuo_dialog_settings',
+  LANGUAGE: 'yuanzhuo_language',
 };
 
 // 从本地存储加载数据
 const loadFromStorage = (key, defaultValue = null) => {
   try {
-    // 先从 sessionStorage 尝试恢复（防止服务器重启导致的数据丢失）
-    const sessionBackup = sessionStorage.getItem(key + '_backup');
-    if (sessionBackup) {
-      const parsed = JSON.parse(sessionBackup);
-      // 恢复到 localStorage
-      localStorage.setItem(key, JSON.stringify(parsed));
-      // 清除 sessionStorage 备份
-      sessionStorage.removeItem(key + '_backup');
-      console.log(`从备份恢复数据: ${key}`);
+    const item = localStorage.getItem(key);
+    if (item) {
+      const parsed = JSON.parse(item);
+      console.log(`[存储] 加载数据: ${key}`, parsed);
       return parsed;
     }
-    
-    const item = localStorage.getItem(key);
-    return item ? JSON.parse(item) : defaultValue;
+    console.log(`[存储] 无数据，使用默认值: ${key}`);
+    return defaultValue;
   } catch (error) {
-    console.error('Error loading from localStorage:', error);
+    console.error('[存储] 加载失败:', key, error);
     return defaultValue;
   }
 };
@@ -37,13 +32,13 @@ const saveToStorage = (key, value) => {
   try {
     if (value === null || value === undefined) {
       localStorage.removeItem(key);
+      console.log(`[存储] 删除数据: ${key}`);
     } else {
       localStorage.setItem(key, JSON.stringify(value));
-      // 同时保存到 sessionStorage 作为备份
-      sessionStorage.setItem(key + '_backup', JSON.stringify(value));
+      console.log(`[存储] 保存数据: ${key}`, value);
     }
   } catch (error) {
-    console.error('Error saving to localStorage:', error);
+    console.error('[存储] 保存失败:', key, error);
   }
 };
 
@@ -991,8 +986,30 @@ export const useForumStore = create((set, get) => ({
     useNames: true,       // 角色称呼：AI 发言时称呼名字
   }),
   
+  // 语言设置 - 从本地存储加载
+  language: loadFromStorage(STORAGE_KEYS.LANGUAGE, 'zh'),
+  
   // 发言统计
   speakerStats: {},
+
+  // 初始化数据 - 确保本地存储有数据
+  initStorage: () => {
+    const state = get();
+    // 确保所有关键数据都保存到 localStorage
+    saveToStorage(STORAGE_KEYS.ACTIVE_CHARACTERS, state.activeCharacters);
+    saveToStorage(STORAGE_KEYS.TOPICS, state.topics);
+    saveToStorage(STORAGE_KEYS.CURRENT_TOPIC, state.currentTopicId);
+    saveToStorage(STORAGE_KEYS.API_CONFIGS, state.apiConfigs);
+    saveToStorage(STORAGE_KEYS.DIALOG_SETTINGS, state.dialogSettings);
+    saveToStorage(STORAGE_KEYS.LANGUAGE, state.language);
+    console.log('[存储] 初始化存储完成');
+  },
+
+  // 设置语言
+  setLanguage: (lang) => {
+    set({ language: lang });
+    saveToStorage(STORAGE_KEYS.LANGUAGE, lang);
+  },
 
   // 分类管理
   setCurrentCategory: (category) => set({ currentCategory: category }),

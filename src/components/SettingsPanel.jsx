@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useForumStore } from '../store';
+import { t } from '../i18n';
 
 function SettingsPanel() {
   const { 
@@ -12,6 +13,7 @@ function SettingsPanel() {
     setCharacterAPIConfig,
     dialogSettings,
     setDialogSettings,
+    language,
   } = useForumStore();
   
   const [showAddConfigModal, setShowAddConfigModal] = useState(false);
@@ -53,7 +55,7 @@ function SettingsPanel() {
 
   const handleSaveConfig = () => {
     if (!configFormData.name.trim() || !configFormData.apiKey.trim()) {
-      alert('请填写配置名称和 API Key');
+      alert(t('settings.fillConfigName', language));
       return;
     }
 
@@ -67,10 +69,10 @@ function SettingsPanel() {
 
     if (editingConfig) {
       updateAPIConfig(editingConfig.id, config);
-      alert('配置已更新！');
+      alert(t('settings.configUpdated', language));
     } else {
       addAPIConfig(config);
-      alert('配置已添加！');
+      alert(t('settings.configAdded', language));
     }
 
     setShowAddConfigModal(false);
@@ -78,7 +80,7 @@ function SettingsPanel() {
   };
 
   const handleDeleteConfig = (config) => {
-    if (confirm(`确定要删除配置 "${config.name}" 吗？`)) {
+    if (confirm(`${t('settings.confirmDelete', language)} "${config.name}"?`)) {
       deleteAPIConfig(config.id);
     }
   };
@@ -90,13 +92,13 @@ function SettingsPanel() {
 
   const handleAssignToCharacters = (selectedCharacterIds) => {
     if (!selectedConfigForAssign || selectedCharacterIds.length === 0) {
-      alert('请至少选择一个角色');
+      alert(t('settings.selectCharacter', language));
       return;
     }
     
     assignAPIConfigToMultipleCharacters(selectedCharacterIds, selectedConfigForAssign.id);
-    alert(`已为 ${selectedCharacterIds.length} 个角色分配 "${selectedConfigForAssign.name}" 配置`);
-    setShowCharacterSelector(false);
+      alert(`${t('settings.assignedConfig', language)} ${selectedCharacterIds.length} ${t('settings.characters', language)} "${selectedConfigForAssign.name}"`);
+      setShowCharacterSelector(false);
     setSelectedConfigForAssign(null);
   };
 
@@ -116,19 +118,19 @@ function SettingsPanel() {
   return (
     <div className="bg-white/90 backdrop-blur-md rounded-xl p-6 border border-gray-200 shadow-lg">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">AI 配置</h2>
+        <h2 className="text-2xl font-bold text-gray-800">{t('settings.title', language)}</h2>
         <button
           onClick={handleOpenAddConfig}
           className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white text-sm rounded-lg transition-all shadow-md"
         >
-          新建配置
+          {t('topic.new', language)}
         </button>
       </div>
 
       {apiConfigs.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-gray-500 mb-4">暂无 AI 配置</p>
-          <p className="text-gray-400 text-sm">点击"新建配置"创建你的第一个 AI 配置</p>
+          <p className="text-gray-500 mb-4">{t('settings.noConfigs', language)}</p>
+          <p className="text-gray-400 text-sm">{t('settings.oneClickConfig', language)}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4">
@@ -148,12 +150,12 @@ function SettingsPanel() {
                       </span>
                     </h3>
                     <p className="text-sm text-gray-500 mt-1">
-                      模型：{config.model}
+                      {t('settings.configModel', language)}: {config.model}
                     </p>
                   </div>
                   <div className="flex items-center space-x-2">
                     <span className="text-xs text-gray-400">
-                      已分配：{assignedCount} 个角色
+                      {t('settings.assignedCount', language)}: {assignedCount} {t('settings.characters', language)}
                     </span>
                   </div>
                 </div>
@@ -163,19 +165,19 @@ function SettingsPanel() {
                     onClick={() => handleOpenAssign(config)}
                     className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition-all"
                   >
-                    一键配置角色
+                    {t('settings.batchAssign', language)}
                   </button>
                   <button
                     onClick={() => handleOpenEditConfig(config)}
                     className="px-3 py-1.5 bg-gray-600 hover:bg-gray-700 text-white text-xs rounded transition-all"
                   >
-                    编辑
+                    {t('action.edit', language)}
                   </button>
                   <button
                     onClick={() => handleDeleteConfig(config)}
                     className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs rounded transition-all"
                   >
-                    删除
+                    {t('action.delete', language)}
                   </button>
                 </div>
               </div>
@@ -189,26 +191,26 @@ function SettingsPanel() {
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
           <div className="bg-gray-800 rounded-xl p-6 max-w-md w-full border border-white/20">
             <h3 className="text-xl font-bold text-white mb-4">
-              {editingConfig ? '编辑 AI 配置' : '新建 AI 配置'}
+              {editingConfig ? t('action.edit', language) : t('topic.new', language)} {t('settings.title', language)}
             </h3>
             
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  配置名称
+                  {t('settings.configName', language)}
                 </label>
                 <input
                   type="text"
                   value={configFormData.name}
                   onChange={(e) => setConfigFormData({ ...configFormData, name: e.target.value })}
-                  placeholder="例如：我的 OpenAI、备用 DeepSeek"
+                  placeholder={t('settings.placeholder.name', language)}
                   className="w-full bg-black/30 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  AI 服务商
+                  {t('settings.provider', language)}
                 </label>
                 <select
                   value={configFormData.provider}
@@ -229,20 +231,20 @@ function SettingsPanel() {
               
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  API Key
+                  {t('settings.apiKey', language)}
                 </label>
                 <input
                   type="password"
                   value={configFormData.apiKey}
                   onChange={(e) => setConfigFormData({ ...configFormData, apiKey: e.target.value })}
-                  placeholder={`输入你的 ${providers.find(p => p.id === configFormData.provider)?.name} API Key`}
+                  placeholder={t('settings.placeholder.apiKey', language)}
                   className="w-full bg-black/30 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500"
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  模型
+                  {t('settings.model', language)}
                 </label>
                 <select
                   value={configFormData.model}
@@ -257,7 +259,7 @@ function SettingsPanel() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  温度 (Temperature): {configFormData.temperature}
+                  {t('settings.temperature', language)}: {configFormData.temperature}
                 </label>
                 <input
                   type="range"
@@ -269,7 +271,7 @@ function SettingsPanel() {
                   className="w-full"
                 />
                 <p className="text-xs text-gray-400 mt-1">
-                  越低越确定（0），越高越随机（2）
+                  {t('settings.temperatureHint', language) || '越低越确定（0），越高越随机（2）'}
                 </p>
               </div>
               
@@ -279,7 +281,7 @@ function SettingsPanel() {
                   disabled={!configFormData.name.trim() || !configFormData.apiKey.trim()}
                   className="flex-1 px-4 py-3 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white rounded-lg font-medium transition-all disabled:cursor-not-allowed"
                 >
-                  保存配置
+                  {t('action.save', language)}
                 </button>
                 <button
                   onClick={() => {
@@ -288,7 +290,7 @@ function SettingsPanel() {
                   }}
                   className="px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-all"
                 >
-                  取消
+                  {t('action.cancel', language)}
                 </button>
               </div>
             </div>
@@ -308,81 +310,65 @@ function SettingsPanel() {
 
       {/* 对话设置部分 */}
       <div className="mt-8 pt-6 border-t border-gray-200">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">对话设置</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">{t('dialog.settings', language)}</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* 每轮最高发言次数 */}
           <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
             <label className="text-sm font-medium text-gray-700 block mb-3">
-              每轮最高发言次数
+              {t('dialog.turnsLabel', language)}
             </label>
             <select
               value={dialogSettings.maxTurns}
               onChange={(e) => handleDialogSettingChange('maxTurns', parseInt(e.target.value))}
               className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg text-sm font-medium text-gray-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all bg-white cursor-pointer"
             >
-              <option value={1}>1 次</option>
-              <option value={2}>2 次</option>
-              <option value={3}>3 次</option>
-              <option value={4}>4 次</option>
-              <option value={5}>5 次</option>
-              <option value={6}>6 次</option>
-              <option value={7}>7 次</option>
-              <option value={8}>8 次</option>
-              <option value={9}>9 次</option>
-              <option value={10}>10 次</option>
+              {[1,2,3,4,5,6,7,8,9,10].map(num => (
+                <option key={num} value={num}>{num} {t('dialog.turns', language)}</option>
+              ))}
             </select>
             <p className="text-xs text-gray-500 mt-2">
-              限制每个 AI 每轮最多发言次数
+              {t('dialog.turnsHint', language)}
             </p>
           </div>
 
           {/* 每轮最低发言次数 */}
           <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
             <label className="text-sm font-medium text-gray-700 block mb-3">
-              每轮最低发言次数
+              {t('dialog.minTurns', language)}
             </label>
             <select
               value={dialogSettings.minTurns}
               onChange={(e) => handleDialogSettingChange('minTurns', parseInt(e.target.value))}
               className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg text-sm font-medium text-gray-800 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all bg-white cursor-pointer"
             >
-              <option value={0}>0 次（不强制）</option>
-              <option value={1}>1 次</option>
-              <option value={2}>2 次</option>
-              <option value={3}>3 次</option>
-              <option value={4}>4 次</option>
-              <option value={5}>5 次</option>
+              <option value={0}>0 {t('dialog.minTurnsOptional', language)}</option>
+              {[1,2,3,4,5].map(num => (
+                <option key={num} value={num}>{num} {t('dialog.minTurnsOptional', language).split('（')[0]}</option>
+              ))}
             </select>
             <p className="text-xs text-gray-500 mt-2">
-              确保每个 AI 都参与讨论
+              {t('dialog.minTurnsHint', language)}
             </p>
           </div>
 
           {/* 发言间隔时间 */}
           <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
             <label className="text-sm font-medium text-gray-700 block mb-3">
-              发言间隔时间
+              {t('dialog.interval', language)}
             </label>
             <select
               value={dialogSettings.delay}
               onChange={(e) => handleDialogSettingChange('delay', parseInt(e.target.value))}
               className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg text-sm font-medium text-gray-800 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all bg-white cursor-pointer"
             >
-              <option value={0}>0 秒（立即）</option>
-              <option value={1}>1 秒</option>
-              <option value={2}>2 秒</option>
-              <option value={3}>3 秒</option>
-              <option value={4}>4 秒</option>
-              <option value={5}>5 秒</option>
-              <option value={6}>6 秒</option>
-              <option value={7}>7 秒</option>
-              <option value={8}>8 秒</option>
-              <option value={9}>9 秒</option>
-              <option value={10}>10 秒</option>
+              <option value={0}>0 {t('dialog.intervalImmediate', language)}</option>
+              {[1,2,3,4,5,6,7,8,9,10].map(num => (
+                <option key={num} value={num}>{num} {t('dialog.interval', language).split('时间')[0]}</option>
+              ))}
             </select>
             <p className="text-xs text-gray-500 mt-2">
-              模拟真人思考时间
+              {t('dialog.intervalHint', language)}
             </p>
           </div>
         </div>
@@ -397,11 +383,11 @@ function SettingsPanel() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
                 </svg>
                 <label className="text-sm font-medium text-gray-700">
-                  互动模式
+                  {t('dialog.interactiveMode', language)}
                 </label>
               </div>
               <p className="text-xs text-gray-500 mt-1">
-                AI 可以看到并回应其他 AI 的发言
+                {t('dialog.interactiveHint', language)}
               </p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
@@ -423,11 +409,11 @@ function SettingsPanel() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
                 <label className="text-sm font-medium text-gray-700">
-                  角色称呼
+                  {t('dialog.useNames', language)}
                 </label>
               </div>
               <p className="text-xs text-gray-500 mt-1">
-                AI 发言时会称呼其他角色的名字
+                {t('dialog.useNamesHint', language)}
               </p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
@@ -609,6 +595,9 @@ export const providers = [
   { id: 'iflytek', name: 'iFlytek (讯飞)' },
   { id: 'minimax', name: 'MiniMax' },
   { id: 'doubao', name: 'Doubao (字节)' },
+  { id: 'huggingface', name: 'Hugging Face (免费)' },
+  { id: 'ollama', name: 'Ollama (本地免费)' },
+  { id: 'groq', name: 'Groq (免费额度)' },
 ];
 
 export const models = {
@@ -683,6 +672,25 @@ export const models = {
     { id: 'doubao-1.5-vision-pro', name: 'doubao-1.5-vision-pro' },
     { id: 'doubao-seed-code', name: 'doubao-seed-code' },
     { id: 'doubao-1.0', name: 'doubao-1.0' },
+  ],
+  huggingface: [
+    { id: 'mistralai/Mistral-7B-Instruct-v0.2', name: 'Mistral-7B-Instruct' },
+    { id: 'meta-llama/Llama-2-7b-chat-hf', name: 'Llama-2-7B-Chat' },
+    { id: 'Qwen/Qwen2.5-7B-Instruct', name: 'Qwen2.5-7B-Instruct' },
+    { id: 'google/gemma-2b-it', name: 'Gemma-2B-It' },
+  ],
+  ollama: [
+    { id: 'llama2', name: 'Llama 2' },
+    { id: 'qwen2.5', name: 'Qwen 2.5' },
+    { id: 'mistral', name: 'Mistral' },
+    { id: 'gemma2', name: 'Gemma 2' },
+    { id: 'deepseek-coder', name: 'DeepSeek Coder' },
+  ],
+  groq: [
+    { id: 'llama3-70b-8192', name: 'Llama 3 70B' },
+    { id: 'llama3-8b-8192', name: 'Llama 3 8B' },
+    { id: 'mixtral-8x7b-32768', name: 'Mixtral 8x7B' },
+    { id: 'gemma2-9b-it', name: 'Gemma 2 9B' },
   ],
 };
 
