@@ -22,6 +22,7 @@ function TopicCharacterPanel() {
   const [newTitle, setNewTitle] = useState('');
   const [newDescription, setNewDescription] = useState('');
   const [showCharacterSelect, setShowCharacterSelect] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(CHARACTER_CATEGORIES.ALL);
   const [sortBy, setSortBy] = useState('popularity');
@@ -34,6 +35,7 @@ function TopicCharacterPanel() {
     createTopic(newTitle, newDescription);
     setNewTitle('');
     setNewDescription('');
+    setShowCreateForm(false);
   };
 
   const handleTopicClick = (topic) => {
@@ -142,35 +144,71 @@ function TopicCharacterPanel() {
   // 话题管理界面
   if (!showCharacterSelect) {
     return (
-      <div className="h-full flex flex-col bg-gradient-to-b from-blue-50/50 to-white">
-        <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-4 pt-4">话题</h2>
-        
-        {/* 创建话题表单 */}
-        <div className="mb-3 px-4">
-          <div className="space-y-2">
-            <input
-              type="text"
-              value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
-              placeholder={t('topic.placeholder.title', language)}
-              className="w-full bg-white/50 border-0 rounded-lg px-3 py-2 text-gray-800 text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300"
-            />
-            <textarea
-              value={newDescription}
-              onChange={(e) => setNewDescription(e.target.value)}
-              placeholder={t('topic.placeholder.description', language)}
-              rows={2}
-              className="w-full bg-white/50 border-0 rounded-lg px-3 py-2 text-gray-800 text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300 resize-none"
-            />
+      <div className="h-full flex flex-col bg-white/80 backdrop-blur-xl rounded-2xl border border-gray-200">
+        {/* 新建话题按钮 */}
+        {!showCreateForm && (
+          <div className="px-4 pt-4 mb-2">
             <button
-              onClick={handleCreateTopic}
-              disabled={!newTitle.trim()}
-              className="w-full px-3 py-2 bg-gray-800 hover:bg-gray-700 disabled:bg-gray-400 text-white text-sm rounded-lg transition-all disabled:cursor-not-allowed font-medium"
+              onClick={() => setShowCreateForm(true)}
+              className="w-full px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition-all flex items-center justify-between"
             >
-              {t('topic.create', language)}
+              <span className="flex items-center">
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                {t('topic.new', language) || '新建话题'}
+              </span>
+              <span className="text-xs opacity-60">⌘N</span>
             </button>
           </div>
-        </div>
+        )}
+        
+        {/* 话题标题 */}
+        <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-4">
+          {t('topic.title', language)}
+          <span className="ml-2 px-2 py-0.5 bg-gray-800 text-white text-[10px] font-medium rounded-full">{topics.length}</span>
+        </h2>
+        
+        {/* 创建话题表单 */}
+        {showCreateForm && (
+          <div className="mb-3 px-4">
+            <div className="space-y-2">
+              <input
+                type="text"
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                placeholder={t('topic.placeholder.title', language)}
+                className="w-full bg-white/50 border-0 rounded-lg px-3 py-2 text-gray-800 text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300"
+              />
+              <textarea
+                value={newDescription}
+                onChange={(e) => setNewDescription(e.target.value)}
+                placeholder={t('topic.placeholder.description', language)}
+                rows={2}
+                className="w-full bg-white/50 border-0 rounded-lg px-3 py-2 text-gray-800 text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300 resize-none"
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={handleCreateTopic}
+                  disabled={!newTitle.trim()}
+                  className="flex-1 px-3 py-2 bg-gray-800 hover:bg-gray-700 disabled:bg-gray-400 text-white text-sm rounded-lg transition-all disabled:cursor-not-allowed font-medium"
+                >
+                  {t('topic.create', language)}
+                </button>
+                <button
+                  onClick={() => {
+                    setShowCreateForm(false);
+                    setNewTitle('');
+                    setNewDescription('');
+                  }}
+                  className="flex-1 px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm rounded-lg transition-all font-medium"
+                >
+                  {t('action.cancel', language) || '取消'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* 话题列表 */}
         <div className="flex-1 overflow-y-auto px-4 space-y-2 [&::-webkit-scrollbar]:hidden">
@@ -231,7 +269,7 @@ function TopicCharacterPanel() {
   // 角色选择界面
   if (showConfigPanel && configuringCharacter) {
     return (
-      <div className="h-full flex flex-col bg-gradient-to-b from-blue-50/50 to-white">
+      <div className="h-full flex flex-col bg-white/80 backdrop-blur-xl rounded-2xl border border-gray-200">
         <div className="px-4 pt-4 pb-3">
           <div className="flex items-center">
             <button
@@ -350,7 +388,7 @@ function TopicCharacterPanel() {
 
   // 角色选择主界面
   return (
-    <div className="h-full flex flex-col bg-gradient-to-b from-blue-50/50 to-white">
+    <div className="h-full flex flex-col bg-white/80 backdrop-blur-xl rounded-2xl border border-gray-200">
       <div className="px-4 pt-4 pb-3 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">

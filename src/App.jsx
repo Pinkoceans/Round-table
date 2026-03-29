@@ -423,7 +423,7 @@ function App() {
 
       <main className="max-w-7xl mx-auto px-4 py-2">
         {activeTab === 'chat' && (
-          <div className="flex gap-4 h-[calc(100vh-72px)] transition-all duration-300">
+          <div className="flex gap-1 h-[calc(100vh-72px)] transition-all duration-300">
             {/* 话题侧边栏 */}
             <div className={`overflow-hidden transition-all duration-300 ${showTopicPanel ? 'w-80' : 'w-0'} flex-shrink-0`}>
               {showTopicPanel && <TopicCharacterPanel />}

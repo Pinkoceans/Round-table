@@ -1,18 +1,5 @@
 [build]
-  command = "npm run build"
   publish = "dist"
 
 [functions]
   directory = "netlify/functions"
-
-[identity]
-  enabled = true
-  
-[identity.external_providers]
-  github = true
-  gitlab = true
-  bitbucket = true
-  google = true
-  facebook = true
-  # 注意：微信、支付宝、抖音需要通过自定义 OAuth 实现
-  # 需要在 Netlify 后台配置相应的 OAuth 应用
