@@ -1,0 +1,447 @@
+/* Persona 3 Reload Theme - Bold Borderless Design */
+
+/* ============================================
+   COLOR SYSTEM - High Gray-White Ratio
+   ============================================ */
+:root {
+  /* Deep Backgrounds */
+  --p3r-bg-deep: #080c14;
+  --p3r-bg-primary: #0d1117;
+  --p3r-bg-secondary: #111820;
+  --p3r-bg-tertiary: #161d28;
+  --p3r-bg-card: #1a2230;
+  --p3r-bg-hover: #1e2838;
+
+  /* Gray Scale - Enhanced for gray-white ratio */
+  --p3r-gray-50: #f5f7fa;
+  --p3r-gray-100: #e4e8ee;
+  --p3r-gray-200: #c8d0db;
+  --p3r-gray-300: #a8b4c4;
+  --p3r-gray-400: #8896aa;
+  --p3r-gray-500: #687890;
+  --p3r-gray-600: #4a5a70;
+  --p3r-gray-700: #2d3a4d;
+  --p3r-gray-800: #1a2435;
+  --p3r-gray-900: #0f141f;
+
+  /* Blue Accents - Muted */
+  --p3r-blue-dim: #1a3050;
+  --p3r-blue-soft: #254060;
+  --p3r-blue-primary: #305880;
+  --p3r-blue-bright: #3a70a0;
+  --p3r-blue-glow: #4a88b8;
+
+  /* Cyan Accents - Very subtle */
+  --p3r-cyan: #4a7a9a;
+  --p3r-cyan-soft: rgba(74, 122, 154, 0.08);
+  --p3r-cyan-glow: rgba(74, 122, 154, 0.15);
+
+  /* White & Transparent - High ratio */
+  --p3r-white-soft: rgba(228, 232, 238, 0.04);
+  --p3r-white-mid: rgba(228, 232, 238, 0.08);
+  --p3r-white-strong: rgba(228, 232, 238, 0.15);
+
+  /* Borders - Very subtle */
+  --p3r-border-subtle: rgba(104, 120, 144, 0.12);
+  --p3r-border-mid: rgba(104, 120, 144, 0.22);
+  --p3r-border-strong: rgba(104, 120, 144, 0.35);
+
+  /* Text Colors - Gray-white dominant */
+  --p3r-text-primary: #e4e8ee;
+  --p3r-text-secondary: #a8b4c4;
+  --p3r-text-muted: #687890;
+  --p3r-text-dim: #4a5a70;
+
+  /* Accent Colors - Muted */
+  --p3r-accent-warm: #8a7a6a;
+  --p3r-accent-cool: #6a8a9a;
+}
+
+/* ============================================
+   BOLD DIAGONAL ELEMENTS
+   ============================================ */
+
+/* Large diagonal clip paths */
+.p3r-cut-bold {
+  clip-path: polygon(8% 0%, 100% 0%, 92% 100%, 0% 100%);
+}
+
+.p3r-cut-extreme {
+  clip-path: polygon(12% 0%, 100% 0%, 88% 100%, 0% 100%);
+}
+
+.p3r-cut-left-bold {
+  clip-path: polygon(0% 8%, 100% 0%, 100% 100%, 0% 92%);
+}
+
+.p3r-cut-right-bold {
+  clip-path: polygon(0% 0%, 100% 8%, 100% 92%, 0% 100%);
+}
+
+.p3r-cut-both-bold {
+  clip-path: polygon(6% 0%, 100% 6%, 94% 100%, 0% 94%);
+}
+
+.p3r-cut-diamond-lg {
+  clip-path: polygon(15% 0%, 85% 0%, 100% 50%, 85% 100%, 15% 100%, 0% 50%);
+}
+
+.p3r-cut-arrow-lg {
+  clip-path: polygon(0% 20%, 75% 20%, 75% 0%, 100% 50%, 75% 100%, 75% 80%, 0% 80%);
+}
+
+.p3r-cut-chevron {
+  clip-path: polygon(0% 0%, 85% 0%, 100% 50%, 85% 100%, 0% 100%, 15% 50%);
+}
+
+/* Diagonal sections */
+.p3r-diagonal-section {
+  position: relative;
+}
+
+.p3r-diagonal-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 48%, var(--p3r-border-subtle) 49%, var(--p3r-border-subtle) 51%, transparent 52%);
+  pointer-events: none;
+}
+
+/* Diagonal stripes - Large scale */
+.p3r-bg-diagonal-bold {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 30px,
+    var(--p3r-white-soft) 30px,
+    var(--p3r-white-soft) 31px
+  );
+}
+
+/* Diagonal corner accents */
+.p3r-corner-diagonal-tl {
+  position: relative;
+}
+
+.p3r-corner-diagonal-tl::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--p3r-border-mid) 0%, transparent 50%);
+}
+
+.p3r-corner-diagonal-br {
+  position: relative;
+}
+
+.p3r-corner-diagonal-br::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(-45deg, var(--p3r-border-mid) 0%, transparent 50%);
+}
+
+/* Slanted edges */
+.p3r-slant-left {
+  transform: skewX(-8deg);
+}
+
+.p3r-slant-right {
+  transform: skewX(8deg);
+}
+
+.p3r-slant-subtle {
+  transform: skewX(-3deg);
+}
+
+/* Diagonal dividers */
+.p3r-divider-diagonal-bold {
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--p3r-border-mid) 20%,
+    var(--p3r-blue-dim) 50%,
+    var(--p3r-border-mid) 80%,
+    transparent 100%
+  );
+  transform: rotate(-1deg) scaleX(1.02);
+}
+
+/* ============================================
+   BACKGROUND PATTERNS - Diagonal Focus
+   ============================================ */
+
+.p3r-bg-grid-diagonal {
+  background-image:
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 80px,
+      var(--p3r-white-soft) 80px,
+      var(--p3r-white-soft) 81px
+    ),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 80px,
+      var(--p3r-white-soft) 80px,
+      var(--p3r-white-soft) 81px
+    );
+}
+
+.p3r-bg-dots-sparse {
+  background-image: radial-gradient(
+    circle,
+    var(--p3r-white-mid) 1px,
+    transparent 1px
+  );
+  background-size: 48px 48px;
+}
+
+/* ============================================
+   PANEL STYLES - Breathing Room
+   ============================================ */
+
+.p3r-panel {
+  background: var(--p3r-bg-secondary);
+  border: 1px solid var(--p3r-border-subtle);
+  position: relative;
+  overflow: hidden;
+}
+
+.p3r-panel-light {
+  background: var(--p3r-white-soft);
+  border: 1px solid var(--p3r-border-subtle);
+}
+
+.p3r-panel-glow {
+  background: var(--p3r-bg-secondary);
+  border: 1px solid var(--p3r-blue-dim);
+  box-shadow:
+    0 0 40px rgba(48, 88, 128, 0.05),
+    inset 0 1px 0 rgba(74, 136, 184, 0.04);
+}
+
+/* ============================================
+   BUTTON STYLES - Diagonal Cuts
+   ============================================ */
+
+.p3r-btn {
+  background: var(--p3r-bg-tertiary);
+  border: 1px solid var(--p3r-border-mid);
+  color: var(--p3r-text-secondary);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  padding: 0.625rem 1.25rem;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.p3r-btn:hover {
+  background: var(--p3r-bg-hover);
+  border-color: var(--p3r-border-strong);
+  color: var(--p3r-text-primary);
+}
+
+.p3r-btn-primary {
+  background: var(--p3r-blue-dim);
+  border: 1px solid var(--p3r-blue-primary);
+  color: var(--p3r-text-primary);
+}
+
+.p3r-btn-primary:hover {
+  background: var(--p3r-blue-soft);
+  border-color: var(--p3r-blue-bright);
+}
+
+/* ============================================
+   INPUT STYLES
+   ============================================ */
+
+.p3r-input {
+  background: var(--p3r-bg-deep);
+  border: 1px solid var(--p3r-border-subtle);
+  color: var(--p3r-text-primary);
+  padding: 0.75rem 1.25rem;
+  transition: all 0.2s ease;
+}
+
+.p3r-input:focus {
+  background: var(--p3r-bg-primary);
+  border-color: var(--p3r-blue-primary);
+  box-shadow: 0 0 0 3px rgba(48, 88, 128, 0.1);
+  outline: none;
+}
+
+.p3r-input::placeholder {
+  color: var(--p3r-text-dim);
+}
+
+/* ============================================
+   TEXT STYLES
+   ============================================ */
+
+.p3r-text-title {
+  color: var(--p3r-text-primary);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.p3r-text-body {
+  color: var(--p3r-text-secondary);
+  line-height: 1.8;
+}
+
+.p3r-text-muted {
+  color: var(--p3r-text-muted);
+  font-size: 0.875rem;
+}
+
+/* ============================================
+   TAG & BADGE STYLES
+   ============================================ */
+
+.p3r-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.p3r-tag-leader {
+  background: rgba(138, 122, 106, 0.1);
+  border: 1px solid rgba(138, 122, 106, 0.2);
+  color: #8a7a6a;
+}
+
+.p3r-tag-party {
+  background: var(--p3r-cyan-soft);
+  border: 1px solid rgba(74, 122, 154, 0.15);
+  color: var(--p3r-cyan);
+}
+
+/* ============================================
+   SCROLLBAR STYLES
+   ============================================ */
+
+.p3r-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.p3r-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.p3r-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--p3r-border-subtle);
+  border-radius: 2px;
+}
+
+.p3r-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--p3r-border-mid);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes p3r-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes p3r-slide-in-left {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes p3r-slide-in-right {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes p3r-glow-pulse {
+  0%, 100% { box-shadow: 0 0 4px rgba(74, 122, 154, 0.1); }
+  50% { box-shadow: 0 0 12px rgba(74, 122, 154, 0.2); }
+}
+
+.p3r-animate-fade {
+  animation: p3r-fade-in 0.3s ease-out;
+}
+
+.p3r-animate-slide-left {
+  animation: p3r-slide-in-left 0.4s ease-out;
+}
+
+.p3r-animate-slide-right {
+  animation: p3r-slide-in-right 0.4s ease-out;
+}
+
+/* ============================================
+   SPACING & BREATHING ROOM - Generous
+   ============================================ */
+
+.p3r-spacing-xs { padding: 0.75rem; }
+.p3r-spacing-sm { padding: 1.25rem; }
+.p3r-spacing-md { padding: 1.75rem; }
+.p3r-spacing-lg { padding: 2.5rem; }
+.p3r-spacing-xl { padding: 3.5rem; }
+
+.p3r-gap-xs { gap: 0.5rem; }
+.p3r-gap-sm { gap: 0.875rem; }
+.p3r-gap-md { gap: 1.25rem; }
+.p3r-gap-lg { gap: 2rem; }
+
+.p3r-margin-sm { margin: 1rem; }
+.p3r-margin-md { margin: 1.5rem; }
+.p3r-margin-lg { margin: 2.5rem; }
+
+/* Minimal border radius */
+.p3r-rounded-sm { border-radius: 2px; }
+.p3r-rounded-md { border-radius: 3px; }
+
+/* Selection */
+::selection {
+  background: rgba(48, 88, 128, 0.2);
+  color: var(--p3r-text-primary);
+}
+
+/* ============================================
+   MESSAGE STYLES
+   ============================================ */
+
+.p3r-message-user {
+  background: linear-gradient(135deg, var(--p3r-gray-800), var(--p3r-gray-700));
+  border: 1px solid var(--p3r-border-subtle);
+  color: var(--p3r-text-primary);
+}
+
+.p3r-message-ai {
+  background: var(--p3r-bg-card);
+  border: 1px solid var(--p3r-border-subtle);
+  color: var(--p3r-text-secondary);
+}
+
+/* ============================================
+   GLASS MORPHISM (very subtle)
+   ============================================ */
+
+.p3r-glass {
+  background: rgba(13, 17, 23, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--p3r-border-subtle);
+}

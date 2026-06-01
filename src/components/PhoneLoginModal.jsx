@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { t } from '../i18n';
 
-const PhoneLoginModal = ({ onClose, onLogin }) => {
+const PhoneLoginModal = ({ onClose, onLogin, language }) => {
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
   const [step, setStep] = useState('phone'); // 'phone' or 'code'
@@ -22,7 +23,7 @@ const PhoneLoginModal = ({ onClose, onLogin }) => {
   // 发送验证码
   const sendCode = async () => {
     if (phone.length !== 11) {
-      alert('请输入正确的手机号');
+      alert(t('login.invalidPhone', language));
       return;
     }
 
@@ -30,7 +31,7 @@ const PhoneLoginModal = ({ onClose, onLogin }) => {
     try {
       // TODO: 调用短信发送 API
       console.log('发送验证码到:', phone);
-      alert('验证码已发送（测试环境：123456）');
+      alert(t('login.codeSentTest', language));
       setStep('code');
       
       // 倒计时
@@ -45,7 +46,7 @@ const PhoneLoginModal = ({ onClose, onLogin }) => {
         });
       }, 1000);
     } catch (error) {
-      alert('发送失败，请稍后重试');
+      alert(t('login.sendFailed', language));
     } finally {
       setLoading(false);
     }
@@ -54,7 +55,7 @@ const PhoneLoginModal = ({ onClose, onLogin }) => {
   // 验证并登录
   const verifyCode = async () => {
     if (code.length !== 6) {
-      alert('请输入 6 位验证码');
+      alert(t('login.invalidCode', language));
       return;
     }
 
@@ -74,21 +75,23 @@ const PhoneLoginModal = ({ onClose, onLogin }) => {
           jwt: async () => 'mock-jwt-token'
         });
       } else {
-        alert('验证码错误（测试验证码：123456）');
+        alert(t('login.codeError', language));
       }
     } catch (error) {
-      alert('验证失败，请稍后重试');
+      alert(t('login.verifyFailed', language));
     } finally {
       setLoading(false);
     }
   };
 
+  const maskedPhone = phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 transform transition-all">
+      <div className="glass-white rounded-2xl shadow-2xl max-w-md w-full p-8 transform transition-all">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-2xl font-bold text-gray-800">
-            {step === 'phone' ? '手机号登录' : '输入验证码'}
+            {step === 'phone' ? t('login.phoneLogin', language) : t('login.enterCode', language)}
           </h3>
           <button
             onClick={onClose}
@@ -104,7 +107,7 @@ const PhoneLoginModal = ({ onClose, onLogin }) => {
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                中国大陆手机号
+                {t('login.chinaPhone', language)}
               </label>
               <div className="flex space-x-3">
                 <div className="flex-1">
@@ -112,14 +115,14 @@ const PhoneLoginModal = ({ onClose, onLogin }) => {
                     type="text"
                     value={phone}
                     onChange={(e) => setPhone(formatPhone(e.target.value))}
-                    placeholder="请输入手机号"
+                    placeholder={t('login.phonePlaceholder', language)}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     maxLength={11}
                   />
                 </div>
               </div>
               <p className="text-xs text-gray-500 mt-2">
-                未注册的手机号登录后将自动创建账户
+                {t('login.autoRegister', language)}
               </p>
             </div>
 
@@ -132,45 +135,45 @@ const PhoneLoginModal = ({ onClose, onLogin }) => {
                   : 'bg-blue-500 hover:bg-blue-600'
               }`}
             >
-              {loading ? '发送中...' : '获取验证码'}
+              {loading ? t('login.sending', language) : t('login.getCode', language)}
             </button>
           </div>
         ) : (
           <div className="space-y-6">
             <div className="text-center mb-4">
               <p className="text-gray-600">
-                验证码已发送至 <span className="font-medium">{phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')}</span>
+                {t('login.codeSent', language, { phone: maskedPhone })}
               </p>
               <button
                 onClick={() => setStep('phone')}
                 className="text-sm text-blue-500 hover:text-blue-600 mt-1"
               >
-                修改手机号
+                {t('login.changePhone', language)}
               </button>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                验证码
+                {t('login.code', language)}
               </label>
               <input
                 type="text"
                 value={code}
                 onChange={(e) => setCode(formatCode(e.target.value))}
-                placeholder="请输入 6 位验证码"
+                placeholder={t('login.codePlaceholder', language)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-center text-2xl tracking-widest"
                 maxLength={6}
               />
               {countdown > 0 ? (
                 <p className="text-sm text-gray-500 text-center mt-2">
-                  {countdown}秒后重发
+                  {t('login.resendIn', language, { count: countdown })}
                 </p>
               ) : (
                 <button
                   onClick={sendCode}
                   className="text-sm text-blue-500 hover:text-blue-600 mt-2"
                 >
-                  重新发送
+                  {t('login.resend', language)}
                 </button>
               )}
             </div>
@@ -184,13 +187,13 @@ const PhoneLoginModal = ({ onClose, onLogin }) => {
                   : 'bg-blue-500 hover:bg-blue-600'
               }`}
             >
-              {loading ? '验证中...' : '登录'}
+              {loading ? t('login.verifying', language) : t('login.login', language)}
             </button>
           </div>
         )}
 
         <p className="text-xs text-gray-400 text-center mt-6">
-          登录即表示您同意我们的服务条款和隐私政策
+          {t('login.agree', language)}
         </p>
       </div>
     </div>

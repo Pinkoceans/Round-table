@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
+import { useForumStore } from '../store';
+import { t } from '../i18n';
 import { aiGuideData } from '../data/aiGuideData';
 
 const AIQuickTips = ({ onSelectTemplate }) => {
+  const { language } = useForumStore();
   const [showTips, setShowTips] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
 
@@ -11,7 +14,7 @@ const AIQuickTips = ({ onSelectTemplate }) => {
       <button
         onClick={() => setShowTips(!showTips)}
         className="p-2 text-gray-400 hover:text-blue-500 transition-colors"
-        title="提问技巧"
+        title={t('quickTips.title', language)}
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -20,9 +23,9 @@ const AIQuickTips = ({ onSelectTemplate }) => {
 
       {/* 技巧提示弹窗 */}
       {showTips && (
-        <div className="absolute right-0 bottom-full mb-2 w-80 bg-white rounded-xl shadow-2xl border border-gray-200 p-4 z-50">
+        <div className="absolute right-0 bottom-full mb-2 w-80 glass-white rounded-xl shadow-2xl border border-gray-200 p-4 z-50">
           <div className="flex justify-between items-center mb-3">
-            <h3 className="font-bold text-gray-800">💡 提问小技巧</h3>
+            <h3 className="font-bold text-gray-800">💡 {t('quickTips.title', language)}</h3>
             <button
               onClick={() => setShowTips(false)}
               className="text-gray-400 hover:text-gray-600"
@@ -49,27 +52,27 @@ const AIQuickTips = ({ onSelectTemplate }) => {
             }}
             className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
           >
-            📋 查看问题模板
+            📋 {t('quickTips.templates', language)}
           </button>
         </div>
       )}
 
       {/* 模板选择弹窗 */}
       {showTemplates && (
-        <TemplateSelector onClose={() => setShowTemplates(false)} onSelect={onSelectTemplate} />
+        <TemplateSelector language={language} onClose={() => setShowTemplates(false)} onSelect={onSelectTemplate} />
       )}
     </div>
   );
 };
 
 // 模板选择器组件
-const TemplateSelector = ({ onClose, onSelect }) => {
-  const [selectedCategory, setSelectedCategory] = useState('学习');
+const TemplateSelector = ({ language, onClose, onSelect }) => {
+  const [selectedCategory, setSelectedCategory] = useState(t('quickTips.category', language));
 
   return (
-    <div className="absolute right-0 bottom-full mb-2 w-96 bg-white rounded-xl shadow-2xl border border-gray-200 p-4 z-50 max-h-96 overflow-y-auto">
+    <div className="absolute right-0 bottom-full mb-2 w-96 glass-white rounded-xl shadow-2xl border border-gray-200 p-4 z-50 max-h-96 overflow-y-auto">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="font-bold text-gray-800">📋 问题模板</h3>
+        <h3 className="font-bold text-gray-800">📋 {t('quickTips.templates', language)}</h3>
         <button
           onClick={onClose}
           className="text-gray-400 hover:text-gray-600"
@@ -116,7 +119,7 @@ const TemplateSelector = ({ onClose, onSelect }) => {
       </div>
 
       <p className="text-xs text-gray-500 mt-3 text-center">
-        点击模板即可使用，可以根据需要修改内容
+        {t('quickTips.hint', language)}
       </p>
     </div>
   );

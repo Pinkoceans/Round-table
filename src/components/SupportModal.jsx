@@ -8,7 +8,7 @@ function SupportModal({ onClose }) {
   
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl p-6 max-w-4xl w-full border border-gray-200">
+      <div className="glass-white rounded-xl p-6 max-w-4xl w-full border border-gray-200">
         <div className="flex items-start justify-between mb-6">
           <div>
             <h2 className="text-2xl font-bold text-gray-800 mb-1">{t('support.title', language)}</h2>
@@ -46,16 +46,16 @@ function SupportModal({ onClose }) {
           <button
             onClick={() => {
               const shareData = {
-                title: '圆桌 - 与伟人对话的思想平台',
-                text: '圆桌是一个创新的多角色 AI 对话模拟平台，让不同时代、不同领域的伟人通过 AI 进行思想碰撞！',
+                title: t('support.shareTitle', language),
+                text: t('support.shareDesc', language),
                 url: window.location.href
               };
-              
+
               if (navigator.share) {
                 navigator.share(shareData);
               } else {
                 navigator.clipboard.writeText(shareData.url);
-                alert('链接已复制到剪贴板，快去分享给朋友吧！');
+                alert(t('support.linkCopied', language));
               }
             }}
             className="group p-4 bg-gradient-to-br from-blue-50 to-indigo-100 hover:from-blue-100 hover:to-indigo-200 border-2 border-blue-200 hover:border-blue-400 rounded-xl transition-all duration-200"
@@ -76,16 +76,8 @@ function SupportModal({ onClose }) {
 
           <button
             onClick={() => {
-              const subject = encodeURIComponent('圆桌项目建议');
-              const body = encodeURIComponent(
-                '你好！我对圆桌项目有一些建议：\n\n' +
-                '--------------------------------\n' +
-                '建议类型：功能建议 / 问题反馈 / 其他\n' +
-                '--------------------------------\n\n' +
-                '请在这里详细描述你的建议：\n\n\n\n' +
-                '--------------------------------\n' +
-                '（邮件由圆桌应用自动生成）'
-              );
+              const subject = encodeURIComponent(t('support.projectSuggestion', language));
+              const body = encodeURIComponent(t('support.suggestionTemplate', language));
               window.open(`mailto:${APP_CONFIG.FEEDBACK_EMAIL}?subject=${subject}&body=${body}`, '_blank');
             }}
             className="group p-4 bg-gradient-to-br from-green-50 to-emerald-100 hover:from-green-100 hover:to-emerald-200 border-2 border-green-200 hover:border-green-400 rounded-xl transition-all duration-200"

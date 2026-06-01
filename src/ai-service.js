@@ -582,6 +582,77 @@ async function callGroq(character, messages, config, conversationHistory = [], s
   return data.choices[0].message.content;
 }
 
+// Together AI 调用（免费额度）
+async function callTogether(character, messages, config, conversationHistory = [], settings = {}) {
+  const systemPrompt = generateSystemPrompt(character, conversationHistory, settings);
+  
+  const formattedMessages = [
+    { role: 'system', content: systemPrompt },
+    ...messages.map((msg) => ({
+      role: msg.role === 'user' ? 'user' : 'assistant',
+      content: msg.content,
+    })),
+  ];
+
+  const response = await fetch('https://api.together.xyz/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${config.apiKey}`,
+    },
+    body: JSON.stringify({
+      model: config.model || 'meta-llama/Llama-3.3-70B-Instruct-Turbo',
+      messages: formattedMessages,
+      temperature: config.temperature || 0.7,
+      max_tokens: 2000,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: response.statusText }));
+    throw new Error(`Together AI 错误：${error.error?.message || response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.choices[0].message.content;
+}
+
+// OpenRouter 调用（聚合多个 AI 服务商）
+async function callOpenRouter(character, messages, config, conversationHistory = [], settings = {}) {
+  const systemPrompt = generateSystemPrompt(character, conversationHistory, settings);
+  
+  const formattedMessages = [
+    { role: 'system', content: systemPrompt },
+    ...messages.map((msg) => ({
+      role: msg.role === 'user' ? 'user' : 'assistant',
+      content: msg.content,
+    })),
+  ];
+
+  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${config.apiKey}`,
+      'HTTP-Referer': window.location.origin,
+    },
+    body: JSON.stringify({
+      model: config.model || 'meta-llama/llama-3.3-70b-instruct:free',
+      messages: formattedMessages,
+      temperature: config.temperature || 0.7,
+      max_tokens: 2000,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: response.statusText }));
+    throw new Error(`OpenRouter 错误：${error.error?.message || response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.choices[0].message.content;
+}
+
 // 主调用函数：根据配置选择对应的 API 提供商（支持多角色互动）
 export async function callAI(character, messages, config, conversationHistory = [], settings = {}) {
   if (!config || !config.apiKey) {
@@ -618,6 +689,10 @@ export async function callAI(character, messages, config, conversationHistory = 
         return await callOllama(character, messages, config, conversationHistory, settings);
       case 'groq':
         return await callGroq(character, messages, config, conversationHistory, settings);
+      case 'together':
+        return await callTogether(character, messages, config, conversationHistory, settings);
+      case 'openrouter':
+        return await callOpenRouter(character, messages, config, conversationHistory, settings);
       case 'openai':
       default:
         return await callOpenAI(character, messages, config, conversationHistory, settings);

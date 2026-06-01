@@ -1,27 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useForumStore } from '../store';
 import { t } from '../i18n';
 
 function SettingsPanel() {
-  const { 
-    apiConfigs, 
-    addAPIConfig, 
-    updateAPIConfig, 
-    deleteAPIConfig, 
-    characters, 
+  const {
+    apiConfigs,
+    addAPIConfig,
+    updateAPIConfig,
+    deleteAPIConfig,
+    characters,
     assignAPIConfigToMultipleCharacters,
-    setCharacterAPIConfig,
     dialogSettings,
     setDialogSettings,
     language,
   } = useForumStore();
-  
+
   const [showAddConfigModal, setShowAddConfigModal] = useState(false);
   const [editingConfig, setEditingConfig] = useState(null);
-  const [assigningConfig, setAssigningConfig] = useState(null);
   const [showCharacterSelector, setShowCharacterSelector] = useState(false);
   const [selectedConfigForAssign, setSelectedConfigForAssign] = useState(null);
-  
+  const [animatingCards, setAnimatingCards] = useState(new Set());
+  const [saveStatus, setSaveStatus] = useState(null);
+  const prevConfigsLengthRef = useRef(0);
+
   const [configFormData, setConfigFormData] = useState({
     name: '',
     provider: 'openai',
@@ -29,6 +30,21 @@ function SettingsPanel() {
     model: 'gpt-5.4-thinking',
     temperature: 0.7,
   });
+
+  useEffect(() => {
+    if (apiConfigs.length > prevConfigsLengthRef.current) {
+      const newConfig = apiConfigs[apiConfigs.length - 1];
+      setAnimatingCards(prev => new Set([...prev, newConfig.id]));
+      setTimeout(() => {
+        setAnimatingCards(prev => {
+          const next = new Set(prev);
+          next.delete(newConfig.id);
+          return next;
+        });
+      }, 500);
+    }
+    prevConfigsLengthRef.current = apiConfigs.length;
+  }, [apiConfigs]);
 
   const handleOpenAddConfig = () => {
     setConfigFormData({
@@ -67,16 +83,28 @@ function SettingsPanel() {
       temperature: configFormData.temperature,
     };
 
-    if (editingConfig) {
-      updateAPIConfig(editingConfig.id, config);
-      alert(t('settings.configUpdated', language));
-    } else {
-      addAPIConfig(config);
-      alert(t('settings.configAdded', language));
-    }
+    setSaveStatus('saving');
 
-    setShowAddConfigModal(false);
-    setEditingConfig(null);
+    setTimeout(() => {
+      if (editingConfig) {
+        updateAPIConfig(editingConfig.id, config);
+        setSaveStatus('success');
+        setTimeout(() => {
+          alert(t('settings.configUpdated', language));
+          setSaveStatus(null);
+        }, 300);
+      } else {
+        addAPIConfig(config);
+        setSaveStatus('success');
+        setTimeout(() => {
+          alert(t('settings.configAdded', language));
+          setSaveStatus(null);
+        }, 300);
+      }
+
+      setShowAddConfigModal(false);
+      setEditingConfig(null);
+    }, 500);
   };
 
   const handleDeleteConfig = (config) => {
@@ -95,10 +123,10 @@ function SettingsPanel() {
       alert(t('settings.selectCharacter', language));
       return;
     }
-    
+
     assignAPIConfigToMultipleCharacters(selectedCharacterIds, selectedConfigForAssign.id);
-      alert(`${t('settings.assignedConfig', language)} ${selectedCharacterIds.length} ${t('settings.characters', language)} "${selectedConfigForAssign.name}"`);
-      setShowCharacterSelector(false);
+    alert(`${t('settings.assignedConfig', language)} ${selectedCharacterIds.length} ${t('settings.characters', language)} "${selectedConfigForAssign.name}"`);
+    setShowCharacterSelector(false);
     setSelectedConfigForAssign(null);
   };
 
@@ -115,67 +143,81 @@ function SettingsPanel() {
     return characters.filter(c => c.apiConfig?.id === configId).length;
   };
 
+  const inputClass = "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/20 transition-colors";
+  const selectClass = "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 transition-colors cursor-pointer";
+  const cardClass = "bg-white/[0.03] border border-white/10 rounded-2xl p-5 hover:border-white/20 transition-all";
+  const btnPrimaryClass = "px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white text-xs rounded-xl transition-all tracking-wide";
+  const btnDangerClass = "px-5 py-2.5 bg-red-500/20 hover:bg-red-500/30 text-red-300 text-xs rounded-xl transition-all tracking-wide";
+
   return (
-    <div className="bg-white/90 backdrop-blur-md rounded-xl p-6 border border-gray-200 shadow-lg">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">{t('settings.title', language)}</h2>
+    <div className="max-w-4xl mx-auto pb-32">
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-sm tracking-[0.2em] font-light text-white">SETTINGS</h2>
         <button
           onClick={handleOpenAddConfig}
-          className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white text-sm rounded-lg transition-all shadow-md"
+          className={btnPrimaryClass}
         >
           {t('topic.new', language)}
         </button>
       </div>
 
       {apiConfigs.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-gray-500 mb-4">{t('settings.noConfigs', language)}</p>
-          <p className="text-gray-400 text-sm">{t('settings.oneClickConfig', language)}</p>
+        <div className="text-center py-12 border border-white/10 rounded-2xl bg-white/[0.02]">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/5 flex items-center justify-center">
+            <svg className="w-8 h-8 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <p className="text-white/40 text-sm mb-2">{t('settings.noConfigs', language)}</p>
+          <p className="text-white/20 text-xs">{t('settings.oneClickConfig', language)}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4">
-          {apiConfigs.map((config) => {
+          {apiConfigs.map((config, index) => {
             const assignedCount = getAssignedCharactersCount(config.id);
+            const isNew = animatingCards.has(config.id);
             return (
               <div
                 key={config.id}
-                className="bg-white/80 rounded-lg p-4 border border-gray-200 hover:border-gray-400 hover:shadow-md transition-all"
+                className={`${cardClass} ${isNew ? 'opacity-0 animate-fade-in' : ''}`}
+                style={{ animationDelay: isNew ? `${index * 0.05}s` : '0s' }}
               >
-                <div className="flex items-start justify-between mb-3">
+                <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+                    <h3 className="text-sm font-light text-white flex items-center tracking-wide">
                       {config.name}
-                      <span className="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded border border-gray-200">
+                      <span className="ml-3 px-3 py-1 bg-white/5 text-white/50 text-xs rounded-full border border-white/10">
                         {config.provider}
                       </span>
                     </h3>
-                    <p className="text-sm text-gray-500 mt-1">
-                      {t('settings.configModel', language)}: {config.model}
+                    <p className="text-xs text-white/30 mt-2">
+                      {t('settings.configModel', language)}: <span className="text-white/50">{config.model}</span>
                     </p>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className="text-xs text-gray-400">
-                      {t('settings.assignedCount', language)}: {assignedCount} {t('settings.characters', language)}
+                    <span className="text-xs text-white/30 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+                      {t('settings.assignedCount', language)}: <span className="text-white/50">{assignedCount}</span> {t('settings.characters', language)}
                     </span>
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   <button
                     onClick={() => handleOpenAssign(config)}
-                    className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition-all"
+                    className={btnPrimaryClass}
                   >
                     {t('settings.batchAssign', language)}
                   </button>
                   <button
                     onClick={() => handleOpenEditConfig(config)}
-                    className="px-3 py-1.5 bg-gray-600 hover:bg-gray-700 text-white text-xs rounded transition-all"
+                    className="px-5 py-2.5 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-xs rounded-xl transition-all tracking-wide"
                   >
                     {t('action.edit', language)}
                   </button>
                   <button
                     onClick={() => handleDeleteConfig(config)}
-                    className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs rounded transition-all"
+                    className={btnDangerClass}
                   >
                     {t('action.delete', language)}
                   </button>
@@ -186,17 +228,16 @@ function SettingsPanel() {
         </div>
       )}
 
-      {/* 添加/编辑配置模态框 */}
       {showAddConfigModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-xl p-6 max-w-md w-full border border-white/20">
-            <h3 className="text-xl font-bold text-white mb-4">
-              {editingConfig ? t('action.edit', language) : t('topic.new', language)} {t('settings.title', language)}
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-black border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <h3 className="text-sm tracking-[0.2em] font-light text-white mb-6">
+              {editingConfig ? t('action.edit', language) : t('topic.new', language)} API CONFIG
             </h3>
-            
+
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-xs text-white/50 mb-2 tracking-wide">
                   {t('settings.configName', language)}
                 </label>
                 <input
@@ -204,33 +245,33 @@ function SettingsPanel() {
                   value={configFormData.name}
                   onChange={(e) => setConfigFormData({ ...configFormData, name: e.target.value })}
                   placeholder={t('settings.placeholder.name', language)}
-                  className="w-full bg-black/30 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500"
+                  className={inputClass}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-xs text-white/50 mb-2 tracking-wide">
                   {t('settings.provider', language)}
                 </label>
                 <select
                   value={configFormData.provider}
                   onChange={(e) => {
-                    setConfigFormData({ 
-                      ...configFormData, 
+                    setConfigFormData({
+                      ...configFormData,
                       provider: e.target.value,
-                      model: models[e.target.value]?.[0]?.id || '' 
+                      model: models[e.target.value]?.[0]?.id || ''
                     });
                   }}
-                  className="w-full bg-black/30 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
+                  className={selectClass}
                 >
                   {providers.map((p) => (
-                    <option key={p.id} value={p.id}>{p.name}</option>
+                    <option key={p.id} value={p.id} className="bg-black text-white">{p.name}</option>
                   ))}
                 </select>
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-xs text-white/50 mb-2 tracking-wide">
                   {t('settings.apiKey', language)}
                 </label>
                 <input
@@ -238,28 +279,28 @@ function SettingsPanel() {
                   value={configFormData.apiKey}
                   onChange={(e) => setConfigFormData({ ...configFormData, apiKey: e.target.value })}
                   placeholder={t('settings.placeholder.apiKey', language)}
-                  className="w-full bg-black/30 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500"
+                  className={inputClass}
                 />
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-xs text-white/50 mb-2 tracking-wide">
                   {t('settings.model', language)}
                 </label>
                 <select
                   value={configFormData.model}
                   onChange={(e) => setConfigFormData({ ...configFormData, model: e.target.value })}
-                  className="w-full bg-black/30 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
+                  className={selectClass}
                 >
                   {models[configFormData.provider]?.map((m) => (
-                    <option key={m.id} value={m.id}>{m.name}</option>
+                    <option key={m.id} value={m.id} className="bg-black text-white">{m.name}</option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  {t('settings.temperature', language)}: {configFormData.temperature}
+                <label className="block text-xs text-white/50 mb-2 tracking-wide">
+                  {t('settings.temperature', language)}: <span className="text-white/70">{configFormData.temperature}</span>
                 </label>
                 <input
                   type="range"
@@ -268,27 +309,50 @@ function SettingsPanel() {
                   step="0.1"
                   value={configFormData.temperature}
                   onChange={(e) => setConfigFormData({ ...configFormData, temperature: parseFloat(e.target.value) })}
-                  className="w-full"
+                  className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-white/50"
                 />
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-xs text-white/20 mt-1">
                   {t('settings.temperatureHint', language) || '越低越确定（0），越高越随机（2）'}
                 </p>
               </div>
-              
+
               <div className="flex space-x-3 pt-4">
                 <button
                   onClick={handleSaveConfig}
-                  disabled={!configFormData.name.trim() || !configFormData.apiKey.trim()}
-                  className="flex-1 px-4 py-3 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white rounded-lg font-medium transition-all disabled:cursor-not-allowed"
+                  disabled={!configFormData.name.trim() || !configFormData.apiKey.trim() || saveStatus === 'saving'}
+                  className={`flex-1 px-4 py-3 text-white rounded-xl text-xs tracking-wide transition-all disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
+                    saveStatus === 'success'
+                      ? 'bg-emerald-500/20 text-emerald-300'
+                      : saveStatus === 'saving'
+                      ? 'bg-white/5 text-white/30'
+                      : 'bg-white/10 hover:bg-white/20'
+                  }`}
                 >
-                  {t('action.save', language)}
+                  {saveStatus === 'saving' ? (
+                    <>
+                      <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      <span>保存中...</span>
+                    </>
+                  ) : saveStatus === 'success' ? (
+                    <>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>已保存</span>
+                    </>
+                  ) : (
+                    t('action.save', language)
+                  )}
                 </button>
                 <button
                   onClick={() => {
                     setShowAddConfigModal(false);
                     setEditingConfig(null);
                   }}
-                  className="px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-all"
+                  className="px-4 py-3 text-white/30 hover:text-white/60 text-xs rounded-xl transition-all tracking-wide"
                 >
                   {t('action.cancel', language)}
                 </button>
@@ -298,7 +362,6 @@ function SettingsPanel() {
         </div>
       )}
 
-      {/* 角色选择模态框 */}
       {showCharacterSelector && (
         <CharacterSelectorModal
           config={selectedConfigForAssign}
@@ -308,85 +371,79 @@ function SettingsPanel() {
         />
       )}
 
-      {/* 对话设置部分 */}
-      <div className="mt-8 pt-6 border-t border-gray-200">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">{t('dialog.settings', language)}</h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* 每轮最高发言次数 */}
-          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-            <label className="text-sm font-medium text-gray-700 block mb-3">
+      <div className="mt-8 pt-6 border-t border-white/10">
+        <h2 className="text-sm tracking-[0.2em] font-light text-white mb-6">DIALOG SETTINGS</h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className={cardClass}>
+            <label className="text-xs text-white/50 block mb-3 tracking-wide">
               {t('dialog.turnsLabel', language)}
             </label>
             <select
               value={dialogSettings.maxTurns}
               onChange={(e) => handleDialogSettingChange('maxTurns', parseInt(e.target.value))}
-              className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg text-sm font-medium text-gray-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all bg-white cursor-pointer"
+              className={selectClass}
             >
               {[1,2,3,4,5,6,7,8,9,10].map(num => (
-                <option key={num} value={num}>{num} {t('dialog.turns', language)}</option>
+                <option key={num} value={num} className="bg-black text-white">{num} {t('dialog.turns', language)}</option>
               ))}
             </select>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-white/20 mt-3">
               {t('dialog.turnsHint', language)}
             </p>
           </div>
 
-          {/* 每轮最低发言次数 */}
-          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-            <label className="text-sm font-medium text-gray-700 block mb-3">
+          <div className={cardClass}>
+            <label className="text-xs text-white/50 block mb-3 tracking-wide">
               {t('dialog.minTurns', language)}
             </label>
             <select
               value={dialogSettings.minTurns}
               onChange={(e) => handleDialogSettingChange('minTurns', parseInt(e.target.value))}
-              className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg text-sm font-medium text-gray-800 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all bg-white cursor-pointer"
+              className={selectClass}
             >
-              <option value={0}>0 {t('dialog.minTurnsOptional', language)}</option>
+              <option value={0} className="bg-black text-white">0 {t('dialog.minTurnsOptional', language)}</option>
               {[1,2,3,4,5].map(num => (
-                <option key={num} value={num}>{num} {t('dialog.minTurnsOptional', language).split('（')[0]}</option>
+                <option key={num} value={num} className="bg-black text-white">{num} {t('dialog.minTurnsOptional', language).split('（')[0]}</option>
               ))}
             </select>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-white/20 mt-3">
               {t('dialog.minTurnsHint', language)}
             </p>
           </div>
 
-          {/* 发言间隔时间 */}
-          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-            <label className="text-sm font-medium text-gray-700 block mb-3">
+          <div className={cardClass}>
+            <label className="text-xs text-white/50 block mb-3 tracking-wide">
               {t('dialog.interval', language)}
             </label>
             <select
               value={dialogSettings.delay}
               onChange={(e) => handleDialogSettingChange('delay', parseInt(e.target.value))}
-              className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg text-sm font-medium text-gray-800 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all bg-white cursor-pointer"
+              className={selectClass}
             >
-              <option value={0}>0 {t('dialog.intervalImmediate', language)}</option>
+              <option value={0} className="bg-black text-white">0 {t('dialog.intervalImmediate', language)}</option>
               {[1,2,3,4,5,6,7,8,9,10].map(num => (
-                <option key={num} value={num}>{num} {t('dialog.interval', language).split('时间')[0]}</option>
+                <option key={num} value={num} className="bg-black text-white">{num} {t('dialog.interval', language).split('时间')[0]}</option>
               ))}
             </select>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-white/20 mt-3">
               {t('dialog.intervalHint', language)}
             </p>
           </div>
         </div>
 
-        {/* 开关设置 */}
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* 互动模式 */}
-          <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <div className={`${cardClass} flex items-center justify-between`}>
             <div className="flex-1">
               <div className="flex items-center space-x-2 mb-1">
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+                <svg className="w-4 h-4 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
                 </svg>
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-xs text-white/50 tracking-wide">
                   {t('dialog.interactiveMode', language)}
                 </label>
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-white/20 mt-1">
                 {t('dialog.interactiveHint', language)}
               </p>
             </div>
@@ -397,22 +454,21 @@ function SettingsPanel() {
                 onChange={(e) => handleDialogSettingChange('interactive', e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              <div className="w-10 h-5 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white/50 after:border-white/20 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-white/30"></div>
             </label>
           </div>
 
-          {/* 角色称呼 */}
-          <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+          <div className={`${cardClass} flex items-center justify-between`}>
             <div className="flex-1">
               <div className="flex items-center space-x-2 mb-1">
-                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                <svg className="w-4 h-4 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-xs text-white/50 tracking-wide">
                   {t('dialog.useNames', language)}
                 </label>
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-white/20 mt-1">
                 {t('dialog.useNamesHint', language)}
               </p>
             </div>
@@ -423,7 +479,7 @@ function SettingsPanel() {
                 onChange={(e) => handleDialogSettingChange('useNames', e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+              <div className="w-10 h-5 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white/50 after:border-white/20 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-white/30"></div>
             </label>
           </div>
         </div>
@@ -432,7 +488,6 @@ function SettingsPanel() {
   );
 }
 
-// 角色选择模态框组件
 function CharacterSelectorModal({ config, characters, onAssign, onClose }) {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedIds, setSelectedIds] = useState([]);
@@ -472,52 +527,52 @@ function CharacterSelectorModal({ config, characters, onAssign, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-800 rounded-xl p-6 max-w-4xl w-full border border-white/20 max-h-[80vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-black border border-white/10 rounded-2xl p-6 max-w-4xl w-full max-h-[80vh] overflow-hidden flex flex-col shadow-2xl">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-bold text-white">
-            选择角色配置 "{config?.name}"
+          <h3 className="text-sm tracking-[0.2em] font-light text-white">
+            选择角色配置 "<span className="text-white/70">{config?.name}</span>"
           </h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white transition-all"
+            className="text-white/30 hover:text-white/60 transition-all p-2 rounded-xl hover:bg-white/5"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs text-gray-400">
-              已选择：{selectedIds.length} 个角色
+            <span className="text-xs text-white/30">
+              已选择：<span className="text-white/50 font-medium">{selectedIds.length}</span> 个角色
             </span>
-            <div className="space-x-1">
+            <div className="space-x-2">
               <button
                 onClick={selectAll}
-                className="px-2 py-1 bg-purple-600 hover:bg-purple-700 text-white text-xs rounded transition-all"
+                className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs rounded-xl transition-all tracking-wide"
               >
                 全选
               </button>
               <button
                 onClick={deselectAll}
-                className="px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white text-xs rounded transition-all"
+                className="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-white/50 text-xs rounded-xl transition-all tracking-wide"
               >
                 清空
               </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-1">
+          <div className="grid grid-cols-4 gap-2">
             {Object.entries(categories).map(([key, name]) => (
               <button
                 key={key}
                 onClick={() => setSelectedCategory(key)}
-                className={`px-2 py-1 rounded text-xs font-medium transition-all ${
+                className={`px-3 py-2 rounded-xl text-xs tracking-wide transition-all ${
                   selectedCategory === key
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-black/30 text-gray-300 hover:bg-gray-600'
+                    ? 'bg-white/20 text-white'
+                    : 'bg-white/5 text-white/40 hover:bg-white/10'
                 }`}
               >
                 {name}
@@ -531,29 +586,31 @@ function CharacterSelectorModal({ config, characters, onAssign, onClose }) {
             <div
               key={character.id}
               onClick={() => toggleSelect(character.id)}
-              className={`p-3 rounded-lg border cursor-pointer transition-all ${
+              className={`p-4 rounded-xl border cursor-pointer transition-all ${
                 selectedIds.includes(character.id)
-                  ? 'bg-purple-600/30 border-purple-500'
-                  : 'bg-black/30 border-white/10 hover:border-purple-500/50'
+                  ? 'bg-white/10 border-white/30'
+                  : 'bg-white/[0.02] border-white/10 hover:border-white/20'
               }`}
             >
               <div className="flex items-center justify-between mb-2">
-                <h4 className="text-white text-sm font-medium truncate flex-1">
+                <h4 className="text-white/70 text-sm font-light truncate flex-1 tracking-wide">
                   {character.name}
                 </h4>
-                <div className={`w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 ml-2 ${
+                <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ml-2 transition-all ${
                   selectedIds.includes(character.id)
-                    ? 'bg-purple-600 border-purple-600'
-                    : 'border-gray-500'
+                    ? 'bg-white/30 border-white/30'
+                    : 'border-white/20'
                 }`}>
                   {selectedIds.includes(character.id) && (
-                    <span className="text-white text-xs">✓</span>
+                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
                   )}
                 </div>
               </div>
-              <p className="text-xs text-gray-400 truncate">{character.identity}</p>
+              <p className="text-xs text-white/30 truncate">{character.identity}</p>
               {character.apiConfig && (
-                <p className="text-xs text-green-400 mt-1 truncate">
+                <p className="text-xs text-emerald-400/60 mt-2 truncate">
                   已配置：{character.apiConfig.name}
                 </p>
               )}
@@ -565,13 +622,13 @@ function CharacterSelectorModal({ config, characters, onAssign, onClose }) {
           <button
             onClick={handleAssign}
             disabled={selectedIds.length === 0}
-            className="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white rounded-lg font-medium transition-all disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-3 bg-white/10 hover:bg-white/20 disabled:bg-white/5 disabled:text-white/20 text-white rounded-xl text-xs tracking-wide transition-all disabled:cursor-not-allowed"
           >
             确认配置 ({selectedIds.length} 个角色)
           </button>
           <button
             onClick={onClose}
-            className="px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-all"
+            className="px-4 py-3 text-white/30 hover:text-white/60 rounded-xl text-xs tracking-wide transition-all"
           >
             取消
           </button>
@@ -581,7 +638,6 @@ function CharacterSelectorModal({ config, characters, onAssign, onClose }) {
   );
 }
 
-// 导出提供商和模型数据（供其他组件使用）
 export const providers = [
   { id: 'openai', name: 'OpenAI' },
   { id: 'anthropic', name: 'Anthropic (Claude)' },

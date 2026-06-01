@@ -49,7 +49,7 @@ function CharacterPanel({ full = false }) {
       return CATEGORY_NAMES;
     }
     return {
-      selected: '已选角色',
+      selected: t('character.selected', language),
       ...CATEGORY_NAMES,
     };
   };
@@ -126,7 +126,7 @@ function CharacterPanel({ full = false }) {
     
     setCharacterAPIConfig(configuringCharacter.id, config);
     setShowAIConfigPanel(false);
-    alert(`${configuringCharacter.name} 的 AI 配置已保存！${configName ? '并已添加到配置列表' : ''}`);
+    alert(t('character.configSaved', language, { name: configuringCharacter.name, added: configName ? t('character.configAddedToList', language) : '' }));
   };
 
   const handleSelectAll = () => {
@@ -149,34 +149,34 @@ function CharacterPanel({ full = false }) {
     return (
       <div className="bg-white/90 backdrop-blur-md rounded-xl p-6 border border-gray-200 shadow-lg">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">{t('character.management', language) || '角色管理'}</h2>
+          <h2 className="text-2xl font-bold text-gray-800">{t('character.management', language)}</h2>
         </div>
 
         <div className="mb-4 bg-white/60 rounded-lg p-4 border border-gray-200">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm text-gray-600 font-medium">
-              {t('category.current', language) || CATEGORY_NAMES[selectedCategory]}: <span className="text-gray-800">{getActiveCount(selectedCategory)}/{getCategoryCount(selectedCategory)}</span> {t('character.activated', language) || '已激活'}
+              {t('category.current', language) || CATEGORY_NAMES[selectedCategory]}: <span className="text-gray-800">{getActiveCount(selectedCategory)}/{getCategoryCount(selectedCategory)}</span> {t('character.activated', language)}
             </span>
             <div className="flex items-center space-x-2">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="bg-white border border-gray-300 rounded px-3 py-1.5 text-sm text-gray-700"
+                className="glass-input rounded px-3 py-1.5 text-sm text-gray-700"
               >
-                <option value="popularity">{t('character.sortByPopularity', language) || '按知名度排序'}</option>
-                <option value="name">{t('character.sortByName', language) || '按名字排序'}</option>
+                <option value="popularity">{t('character.sortByPopularity', language)}</option>
+                <option value="name">{t('character.sortByName', language)}</option>
               </select>
               <button
                 onClick={handleSelectAll}
-                className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white text-sm rounded transition-all shadow-sm"
+                className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white text-sm rounded transition-all shadow-sm btn-micro-interaction"
               >
                 {t('character.selectAll', language)}
               </button>
               <button
                 onClick={handleDeselectAll}
-                className="px-3 py-1.5 bg-gray-500 hover:bg-gray-600 text-white text-sm rounded transition-all"
+                className="px-3 py-1.5 bg-gray-500 hover:bg-gray-600 text-white text-sm rounded transition-all btn-micro-interaction"
               >
-                {t('character.clear', language) || '清空'}
+                {t('character.clear', language)}
               </button>
             </div>
           </div>
@@ -200,7 +200,7 @@ function CharacterPanel({ full = false }) {
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-h-[450px] overflow-y-auto pr-2">
           {sortedCharacters.length === 0 ? (
-            <p className="text-gray-400 text-sm col-span-full text-center py-8">该分类暂无角色</p>
+            <p className="text-gray-400 text-sm col-span-full text-center py-8">{t('character.noCharacters', language)}</p>
           ) : (
             sortedCharacters.map((character) => {
               const isActive = activeCharacters.includes(character.id);
@@ -209,7 +209,7 @@ function CharacterPanel({ full = false }) {
               return (
                 <div
                   key={character.id}
-                  className={`relative rounded-lg p-4 border-2 transition-all hover:shadow-xl aspect-[3/4] flex flex-col ${
+                  className={`relative rounded-lg p-4 border-2 transition-all hover:shadow-xl aspect-[3/4] flex flex-col card-micro-interaction ${
                     isActive
                       ? 'bg-gradient-to-br from-gray-700 to-gray-800 border-gray-600 text-white'
                       : 'bg-white border-gray-200 text-gray-800 hover:border-gray-400'
@@ -224,38 +224,38 @@ function CharacterPanel({ full = false }) {
                   
                   <div className={`flex-1 text-xs space-y-2 overflow-hidden ${isActive ? 'text-gray-300' : 'text-gray-600'}`}>
                     <div>
-                      <span className="opacity-60">性格</span>
+                      <span className="opacity-60">{t('character.personality', language)}</span>
                       <p className="mt-0.5 line-clamp-2">{character.personality}</p>
                     </div>
                     <div>
-                      <span className="opacity-60">风格</span>
+                      <span className="opacity-60">{t('character.style', language)}</span>
                       <p className="mt-0.5 line-clamp-2">{character.speakingStyle}</p>
                     </div>
                   </div>
-                  
+
                   {hasConfig && (
                     <div className={`mt-3 text-xs p-2 rounded ${
                       isActive ? 'bg-gray-600/50 text-green-300' : 'bg-green-50 text-green-700'
                     }`}>
-                      <p className="truncate font-medium">已配置 AI</p>
+                      <p className="truncate font-medium">{t('character.configuredAI', language)}</p>
                       <p className="truncate opacity-80">{character.apiConfig.provider}</p>
                     </div>
                   )}
-                  
+
                   <div className="mt-3">
                     {isActive ? (
                       <button
                         onClick={() => handleRemoveCharacter(character.id)}
-                        className="w-full px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs rounded transition-all"
+                        className="w-full px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs rounded transition-all btn-micro-interaction"
                       >
-                        移除
+                        {t('character.remove', language)}
                       </button>
                     ) : (
                       <button
                         onClick={() => handleAddCharacter(character.id)}
-                        className="w-full px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white text-xs rounded transition-all shadow-sm"
+                        className="w-full px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white text-xs rounded transition-all shadow-sm btn-micro-interaction"
                       >
-                        添加
+                        {t('character.add', language)}
                       </button>
                     )}
                   </div>
@@ -275,7 +275,7 @@ function CharacterPanel({ full = false }) {
       }`}>
         <div className="bg-white/90 backdrop-blur-md rounded-xl border-2 border-gray-200 shadow-lg h-full flex flex-col">
           <div className="px-4 pt-4 pb-2 flex items-center justify-between">
-            <h2 className="text-lg font-bold text-gray-800">{t('character.select', language) || '角色选择'}</h2>
+            <h2 className="text-lg font-bold text-gray-800">{t('character.select', language)}</h2>
             <button
               onClick={() => setExpandedView(!expandedView)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
@@ -284,7 +284,7 @@ function CharacterPanel({ full = false }) {
                   : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
               }`}
             >
-              {expandedView ? (t('action.collapse', language) || '收起') : (t('action.expand', language) || '展开')}
+              {expandedView ? t('action.collapse', language) : t('action.expand', language)}
             </button>
           </div>
           
@@ -314,23 +314,23 @@ function CharacterPanel({ full = false }) {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-white border border-gray-300 rounded px-2 py-1 text-xs text-gray-700"
+              className="glass-input rounded px-2 py-1 text-xs text-gray-700"
             >
-              <option value="popularity">{t('character.sortByPopularity', language) || '按知名度'}</option>
-              <option value="name">{t('character.sortByName', language) || '按字母'}</option>
+              <option value="popularity">{t('character.sortByPopularity', language)}</option>
+              <option value="name">{t('character.sortByName', language)}</option>
             </select>
             <div className="flex items-center space-x-1">
               <button
                 onClick={handleSelectAll}
                 className="px-2 py-1 bg-gray-800 hover:bg-gray-700 text-white text-xs rounded transition-all"
               >
-                全选
+                {t('character.selectAll', language)}
               </button>
               <button
                 onClick={handleDeselectAll}
                 className="px-2 py-1 bg-gray-500 hover:bg-gray-600 text-white text-xs rounded transition-all"
               >
-                清空
+                {t('character.clear', language)}
               </button>
             </div>
           </div>
@@ -339,7 +339,7 @@ function CharacterPanel({ full = false }) {
             expandedView ? 'py-4' : 'py-3'
           }`}>
             {sortedCharacters.length === 0 ? (
-              <p className="text-gray-400 text-sm text-center py-8">该分类暂无角色</p>
+              <p className="text-gray-400 text-sm text-center py-8">{t('character.noCharacters', language)}</p>
             ) : (
               <div className={`grid gap-3 ${
                 expandedView
@@ -393,7 +393,7 @@ function CharacterPanel({ full = false }) {
                               : 'bg-gray-800 hover:bg-gray-700 text-white'
                           }`}
                         >
-                          {isActive ? '移除' : '添加'}
+                          {isActive ? t('character.remove', language) : t('character.add', language)}
                         </button>
                         {isActive && (
                           <button
@@ -403,7 +403,7 @@ function CharacterPanel({ full = false }) {
                             }}
                             className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded transition-all"
                           >
-                            配置
+                            {t('character.configure', language)}
                           </button>
                         )}
                       </div>
@@ -417,10 +417,10 @@ function CharacterPanel({ full = false }) {
           <div className="px-4 pb-3 pt-2 border-t border-gray-200">
             <div className="flex items-center justify-between text-xs">
               <span className="text-gray-500">
-                已选择：<span className="text-gray-800 font-medium">{activeCharacters.length}</span> 位角色
+                {t('character.selectedCount', language, { count: activeCharacters.length })}
               </span>
               <span className="text-gray-400">
-                共 {sortedCharacters.length} 位角色
+                {t('character.totalCount', language, { count: sortedCharacters.length })}
               </span>
             </div>
           </div>
@@ -441,7 +441,7 @@ function CharacterPanel({ full = false }) {
 }
 
 function AIConfigPanel({ character, onBack, onSave }) {
-  const { apiConfigs } = useForumStore();
+  const { apiConfigs, language } = useForumStore();
   const [configProvider, setConfigProvider] = useState(character?.apiConfig?.provider || 'openai');
   const [configApiKey, setConfigApiKey] = useState(character?.apiConfig?.apiKey || '');
   const [configModel, setConfigModel] = useState(character?.apiConfig?.model || 'gpt-5.4-thinking');
@@ -477,9 +477,9 @@ function AIConfigPanel({ character, onBack, onSave }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <h2 className="text-lg font-bold text-gray-800">{t('settings.title', language) || 'AI 配置'}</h2>
+          <h2 className="text-lg font-bold text-gray-800">{t('settings.title', language)}</h2>
         </div>
-        <p className="text-xs text-gray-500 mt-1">{t('character.configureFor', language) || '为'} {character?.name} {t('character.configureAI', language) || '配置 AI 模型'}</p>
+        <p className="text-xs text-gray-500 mt-1">{t('character.configureFor', language)} {character?.name} {t('character.configureAI', language)}</p>
       </div>
       
       <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
@@ -491,38 +491,38 @@ function AIConfigPanel({ character, onBack, onSave }) {
               setConfigProvider(e.target.value);
               setConfigModel(models[e.target.value]?.[0]?.id || '');
             }}
-            className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-800"
+            className="w-full glass-input rounded px-3 py-2 text-sm text-gray-800"
           >
             {providers.map((p) => (
               <option key={p.id} value={p.id}>{p.name}</option>
             ))}
           </select>
         </div>
-        
+
         <div>
           <label className="block text-xs text-gray-500 mb-1">{t('settings.apiKey', language)}</label>
           <input
             type="password"
             value={configApiKey}
             onChange={(e) => setConfigApiKey(e.target.value)}
-            placeholder={`${providers.find(p => p.id === configProvider)?.name} ${t('settings.placeholder.apiKey', language) || 'API Key'}`}
-            className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-800"
+            placeholder={`${providers.find(p => p.id === configProvider)?.name} ${t('settings.placeholder.apiKey', language)}`}
+            className="w-full glass-input rounded px-3 py-2 text-sm text-gray-800"
           />
         </div>
-        
+
         <div>
           <label className="block text-xs text-gray-500 mb-1">{t('settings.model', language)}</label>
           <select
             value={configModel}
             onChange={(e) => setConfigModel(e.target.value)}
-            className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-800"
+            className="w-full glass-input rounded px-3 py-2 text-sm text-gray-800"
           >
             {models[configProvider]?.map((m) => (
               <option key={m.id} value={m.id}>{m.name}</option>
             ))}
           </select>
         </div>
-        
+
         <div className="pt-2">
           <label className="flex items-center space-x-2">
             <input
@@ -531,15 +531,15 @@ function AIConfigPanel({ character, onBack, onSave }) {
               onChange={(e) => setSaveConfig(e.target.checked)}
               className="rounded border-gray-300 text-gray-800 focus:ring-gray-500"
             />
-            <span className="text-xs text-gray-600">保存为配置（可重复使用）</span>
+            <span className="text-xs text-gray-600">{t('settings.saveAsConfig', language)}</span>
           </label>
           {saveConfig && (
             <input
               type="text"
               value={configName}
               onChange={(e) => setConfigName(e.target.value)}
-              placeholder="配置名称（如：我的 OpenAI）"
-              className="w-full mt-2 bg-white border border-gray-300 rounded px-3 py-2 text-sm text-gray-800"
+              placeholder={t('settings.placeholder.name', language)}
+              className="w-full mt-2 glass-input rounded px-3 py-2 text-sm text-gray-800"
             />
           )}
         </div>

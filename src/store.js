@@ -8,6 +8,9 @@ const STORAGE_KEYS = {
   API_CONFIGS: 'yuanzhuo_api_configs',
   DIALOG_SETTINGS: 'yuanzhuo_dialog_settings',
   LANGUAGE: 'yuanzhuo_language',
+  MEMORIES: 'yuanzhuo_memories',
+  AI_CONFIG: 'yuanzhuo_ai_config',
+  VOICE_CONFIGS: 'yuanzhuo_voice_configs',
 };
 
 // 从本地存储加载数据
@@ -973,9 +976,12 @@ export const useForumStore = create((set, get) => ({
   activeCharacters: loadFromStorage(STORAGE_KEYS.ACTIVE_CHARACTERS, []),
   topics: loadFromStorage(STORAGE_KEYS.TOPICS, []),
   currentTopicId: loadFromStorage(STORAGE_KEYS.CURRENT_TOPIC, null),
-  aiConfig: null,
+  aiConfig: loadFromStorage(STORAGE_KEYS.AI_CONFIG, null),
   currentCategory: CHARACTER_CATEGORIES.ALL,
   apiConfigs: loadFromStorage(STORAGE_KEYS.API_CONFIGS, []),
+  
+  // 记忆存储
+  memories: loadFromStorage(STORAGE_KEYS.MEMORIES, []),
   
   // 对话设置 - 从本地存储加载
   dialogSettings: loadFromStorage(STORAGE_KEYS.DIALOG_SETTINGS, {
@@ -992,6 +998,26 @@ export const useForumStore = create((set, get) => ({
   // 发言统计
   speakerStats: {},
 
+  // 语音配置 - 从本地存储加载
+  voiceConfigs: loadFromStorage(STORAGE_KEYS.VOICE_CONFIGS, {
+    global: {
+      engine: 'browser',
+      browser: {
+        voice: null,
+        rate: 1.0,
+        pitch: 1.0,
+        volume: 1.0,
+      },
+      edge: {
+        voice: 'zh-CN-XiaoxiaoNeural',
+        rate: 1.0,
+        pitch: 1.0,
+        volume: 1.0,
+      },
+    },
+    characters: {},
+  }),
+
   // 初始化数据 - 确保本地存储有数据
   initStorage: () => {
     const state = get();
@@ -1002,6 +1028,9 @@ export const useForumStore = create((set, get) => ({
     saveToStorage(STORAGE_KEYS.API_CONFIGS, state.apiConfigs);
     saveToStorage(STORAGE_KEYS.DIALOG_SETTINGS, state.dialogSettings);
     saveToStorage(STORAGE_KEYS.LANGUAGE, state.language);
+    saveToStorage(STORAGE_KEYS.VOICE_CONFIGS, state.voiceConfigs);
+    saveToStorage(STORAGE_KEYS.MEMORIES, state.memories);
+    saveToStorage(STORAGE_KEYS.AI_CONFIG, state.aiConfig);
     console.log('[存储] 初始化存储完成');
   },
 
@@ -1219,5 +1248,76 @@ export const useForumStore = create((set, get) => ({
     const settings = state.dialogSettings;
     const turns = state.speakerStats[characterId]?.turns || 0;
     return turns < settings.minTurns;
+  },
+
+  // 记忆管理
+  saveMemory: (title, messages, characters) =>
+    set((state) => {
+      const newMemory = {
+        id: Date.now().toString(),
+        title,
+        messages,
+        characters,
+        createdAt: Date.now(),
+        summary: messages.slice(-3).map(m => m.content.substring(0, 50)).join(' | '),
+      };
+      const newMemories = [newMemory, ...state.memories];
+      saveToStorage(STORAGE_KEYS.MEMORIES, newMemories);
+      return { memories: newMemories };
+    }),
+
+  deleteMemory: (memoryId) =>
+    set((state) => {
+      const newMemories = state.memories.filter((m) => m.id !== memoryId);
+      saveToStorage(STORAGE_KEYS.MEMORIES, newMemories);
+      return { memories: newMemories };
+    }),
+
+  getMemoryById: (memoryId) => {
+    const state = get();
+    return state.memories.find((m) => m.id === memoryId);
+  },
+
+  // 简化AI配置 - 只保留单个配置
+  setAIConfig: (config) =>
+    set(() => {
+      saveToStorage(STORAGE_KEYS.AI_CONFIG, config);
+      return { aiConfig: config };
+    }),
+
+  getAIConfig: () => {
+    const state = get();
+    return state.aiConfig;
+  },
+
+  // 语音配置管理
+  setVoiceConfig: (config) =>
+    set((state) => {
+      const newVoiceConfigs = { ...state.voiceConfigs, ...config };
+      saveToStorage(STORAGE_KEYS.VOICE_CONFIGS, newVoiceConfigs);
+      return { voiceConfigs: newVoiceConfigs };
+    }),
+
+  setCharacterVoiceConfig: (characterId, config) =>
+    set((state) => {
+      const newVoiceConfigs = {
+        ...state.voiceConfigs,
+        characters: {
+          ...state.voiceConfigs.characters,
+          [characterId]: config,
+        },
+      };
+      saveToStorage(STORAGE_KEYS.VOICE_CONFIGS, newVoiceConfigs);
+      return { voiceConfigs: newVoiceConfigs };
+    }),
+
+  getCharacterVoiceConfig: (characterId) => {
+    const state = get();
+    return state.voiceConfigs.characters[characterId] || null;
+  },
+
+  getVoiceConfig: () => {
+    const state = get();
+    return state.voiceConfigs;
   },
 }));
